@@ -354,7 +354,7 @@ void initShm(Warehouse *arrayArmazens){
         armazensShm[k].produtos[2] = arrayArmazens[k].produtos[2];
         armazensShm[k].idArmazem = arrayArmazens[k].idArmazem;
     }
-    printf("->Armazens na Shared Memory.\n");
+    printf("->Armazens na Shared Memory aaaa.\n");
 }
 
 //Atualiza armazens
