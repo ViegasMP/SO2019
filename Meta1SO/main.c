@@ -218,13 +218,11 @@ int main() {
             if (novo_processo == 0) { //guardar na variavel apenas para o processo central
                 processo_central = getpid();
                 central();
-                exit(0);
             }
         } else { //Cria processos armazens
             novo_processo = fork();
             if (novo_processo == 0) {
                 criaArmazens(armazemN);
-                exit(0);
             }
             armazemN++;
         }
@@ -354,7 +352,7 @@ void initShm(Warehouse *arrayArmazens){
         armazensShm[k].produtos[2] = arrayArmazens[k].produtos[2];
         armazensShm[k].idArmazem = arrayArmazens[k].idArmazem;
     }
-    printf("->Armazens na Shared Memory aaaa.\n");
+    printf("->Armazens na Shared Memory.\n");
 }
 
 //Atualiza armazens
@@ -388,11 +386,14 @@ void criaArmazens(int n) {
 void *controla_drone (void *id) {
 
 	//idDrone vai ter o indice do array de drones para encontrar o id desse drone
-   int idDrone = *(int*)id;
-   while(1){
-   	printf("[%d] Oi galera, este e o meu id: %d\n", idDrone, arrayDrones[idDrone].id);
-   	sleep(10);
-   }
+    int idDrone = *(int*)id;
+    printf("[%d] Sou um drone com id: %d\n", idDrone, arrayDrones[idDrone].id);
+    while(1){
+        if(arrayDrones[idDrone].encomenda_drone == NULL){
+            printf("[%d] Nao tenho nenhuma encomenda :(\n", idDrone);
+            sleep(10);
+        }
+    }
     /*while (1) {
         if (drone->id == escolheDrone(headListaE->next)) {  //Drone a deslocar-se da base ate o armazem
             printf("DX: %0.2f   DY: %0.2f    AX:  %0.2f      AY:   %0.2f \n", drone->posI[0], drone->posI[1],
@@ -444,18 +445,18 @@ int escolheDrone(Encomenda *novoNode){
     novoNode->id_drone = arrayDrones[idEscolhido].id;    //guarda em encomenda o id do drone responsavel por ela
 
     //guarda as informacoes da encomenda no drone
-    arrayDrones[idEscolhido].encomenda.tipo_produto = novoNode->tipo_produto;
-    arrayDrones[idEscolhido].encomenda.coordernadasArmazem[0] = novoNode->coordernadasArmazem[0];
-    arrayDrones[idEscolhido].encomenda.coordernadasArmazem[1] = novoNode->coordernadasArmazem[1];
-    arrayDrones[idEscolhido].encomenda.idArmazem = novoNode->idArmazem;
-    arrayDrones[idEscolhido].encomenda.coordenadas[0] = novoNode->coordenadas[0];
-    arrayDrones[idEscolhido].encomenda.coordenadas[1] = novoNode->coordenadas[1];
-    arrayDrones[idEscolhido].encomenda.nSque = novoNode->nSque;
-    strcpy(arrayDrones[idEscolhido].encomenda.nomeEncomenda,novoNode->nomeEncomenda);
-    arrayDrones[idEscolhido].encomenda.qtd = novoNode ->qtd;
-    arrayDrones[idEscolhido].encomenda.hora = novoNode ->hora;
-    arrayDrones[idEscolhido].encomenda.min = novoNode ->min;
-    arrayDrones[idEscolhido].encomenda.seg = novoNode ->seg;
+    arrayDrones[idEscolhido].encomenda_drone->tipo_produto = novoNode->tipo_produto;
+    arrayDrones[idEscolhido].encomenda_drone->coordernadasArmazem[0] = novoNode->coordernadasArmazem[0];
+    arrayDrones[idEscolhido].encomenda_drone->coordernadasArmazem[1] = novoNode->coordernadasArmazem[1];
+    arrayDrones[idEscolhido].encomenda_drone->idArmazem = novoNode->idArmazem;
+    arrayDrones[idEscolhido].encomenda_drone->coordenadas[0] = novoNode->coordenadas[0];
+    arrayDrones[idEscolhido].encomenda_drone->coordenadas[1] = novoNode->coordenadas[1];
+    arrayDrones[idEscolhido].encomenda_drone->nSque = novoNode->nSque;
+    strcpy(arrayDrones[idEscolhido].encomenda_drone->nomeEncomenda,novoNode->nomeEncomenda);
+    arrayDrones[idEscolhido].encomenda_drone->qtd = novoNode ->qtd;
+    arrayDrones[idEscolhido].encomenda_drone->hora = novoNode ->hora;
+    arrayDrones[idEscolhido].encomenda_drone->min = novoNode ->min;
+    arrayDrones[idEscolhido].encomenda_drone->seg = novoNode ->seg;
     
     //atualiza estatisticas
     pthread_mutex_lock(&mutexes->write_stats);
@@ -504,9 +505,10 @@ void criaDrones(int numI, int qtd){
         arrayDrones[i].id = i;
         arrayDrones[i].estado = 1;
         arrayDrones[i].bateria = dados->bInit;
+        arrayDrones[i].encomenda_drone = NULL;
     }
 
-    printDrones();
+    //printDrones();
 
     //long id[qtd+1];
     for(i=numI; i < qtd; i++) {
@@ -550,9 +552,10 @@ void central(){
     criaDrones(0, dados->n_drones);
 
     if((pthread_create(&charger, NULL, baseCharger, NULL))!=0){
-            perror("Error creating thread\n");
-            exit(1);
+        perror("Error creating thread\n");
+        exit(1);
     }
+    while(1);
 }
 
 void destruirShM_estats(){

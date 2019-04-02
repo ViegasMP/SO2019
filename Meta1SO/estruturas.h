@@ -71,7 +71,7 @@ typedef struct encomenda { // Struct usado para guardar as informacoes de uma en
 }Encomenda;
 
 typedef struct drones { //Struct usado para guardar as informacoes de um drone
-    Encomenda encomenda; //Encomenda atribuida ao drone
+    Encomenda *encomenda_drone; //Encomenda atribuida ao drone
 	int estado;
     /*
     1 se esta em repouso, 2 se esta em deslocamento para carregamento
