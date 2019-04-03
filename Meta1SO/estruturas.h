@@ -57,7 +57,7 @@ typedef struct { //Struct usado para guardar as informacoes da atualizacao de um
 }maisStock;
 
 typedef struct encomenda { // Struct usado para guardar as informacoes de uma encomenda
-    char nomeEncomenda[20];
+    char *nomeEncomenda;
 	int id_drone;
     int nSque;//id encomenda
 	char *tipo_produto;

@@ -100,6 +100,7 @@ int main() {
     struct tm *t = localtime(&tempo);
 
     novoNode = malloc(sizeof(Encomenda));
+    novoNode->nomeEncomenda = "Encomenda Teste";
     novoNode->qtd = 5;
     novoNode->tipo_produto = "Prod_A";
     novoNode->coordenadas[0] = (double) 300;
@@ -402,7 +403,11 @@ void *controla_drone (void *id) {
     while(1){
         if(arrayDrones[idDrone].encomenda_drone == NULL){
             printf("[%d] Nao tenho nenhuma encomenda :(\n", idDrone);
+            sleep(5);
+        } else {
+            printf("[%d]Recebi uma encomenda %s\n", arrayDrones[idDrone].id, arrayDrones[idDrone].encomenda_drone->nomeEncomenda);
             sleep(10);
+
         }
     }
     /*while (1) {
@@ -460,20 +465,18 @@ void escolheDrone(){
             arrayDrones[idEscolhido].estado=2;   //o drone ja nao esta mais em repouso 
             printf("Drone%d mudou para %d\n",arrayDrones[idEscolhido].id,arrayDrones[idEscolhido].estado);
             novoNode->id_drone = arrayDrones[idEscolhido].id;    //guarda em encomenda o id do drone responsavel por ela
-
+            printf("1\n");
+            arrayDrones[idEscolhido].encomenda_drone = malloc(sizeof(Encomenda));
             //guarda as informacoes da encomenda no drone
-            arrayDrones[idEscolhido].encomenda_drone->tipo_produto = novoNode->tipo_produto;
-            arrayDrones[idEscolhido].encomenda_drone->coordernadasArmazem[0] = novoNode->coordernadasArmazem[0];
-            arrayDrones[idEscolhido].encomenda_drone->coordernadasArmazem[1] = novoNode->coordernadasArmazem[1];
-            arrayDrones[idEscolhido].encomenda_drone->idArmazem = novoNode->idArmazem;
-            arrayDrones[idEscolhido].encomenda_drone->coordenadas[0] = novoNode->coordenadas[0];
-            arrayDrones[idEscolhido].encomenda_drone->coordenadas[1] = novoNode->coordenadas[1];
-            arrayDrones[idEscolhido].encomenda_drone->nSque = novoNode->nSque;
-            strcpy(arrayDrones[idEscolhido].encomenda_drone->nomeEncomenda,novoNode->nomeEncomenda);
-            arrayDrones[idEscolhido].encomenda_drone->qtd = novoNode ->qtd;
+            arrayDrones[idEscolhido].encomenda_drone = novoNode;
+            printf("11\n");
             arrayDrones[idEscolhido].encomenda_drone->hora = novoNode ->hora;
+            printf("12\n");
             arrayDrones[idEscolhido].encomenda_drone->min = novoNode ->min;
+            printf("13\n");
             arrayDrones[idEscolhido].encomenda_drone->seg = novoNode ->seg;
+
+            printf("Guardei %s %d\n", arrayDrones[idEscolhido].encomenda_drone->nomeEncomenda, arrayDrones[idEscolhido].encomenda_drone->id_drone);
         
             //atualiza estatisticas
             pthread_mutex_lock(&mutexes->write_stats);
@@ -576,7 +579,7 @@ void *baseCharger(){
                 printf("[%d] com bateria %d\n", arrayDrones[i].id, arrayDrones[i].bateria);
 			}
 		}
-		sleep(dados->f_abast); //a cada unidade de tempo
+		sleep(2); //a cada unidade de tempo
 	}
 }
 
