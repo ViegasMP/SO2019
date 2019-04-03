@@ -1,5 +1,1 @@
-0:18:54 Inicio do programa [941]
-->0:18:54 Mutexes criados
-0:18:54 Warehouse1 criada (id = 943)
-0:18:54 Warehouse2 criada (id = 944)
-0:18:54 Warehouse2 criada (id = 945)
+1:29:12 Inicio do programa [1123]
