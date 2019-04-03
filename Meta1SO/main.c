@@ -4,7 +4,9 @@
     gcc main.c -lpthread -D_REENTRANT -Wall -o prog estruturas.h drone_movement.c drone_movement.h  -lm
     echo "ORDER REQ_1 Prod:A, 5 to: 300, 100" >input_pipe
 
-    bateria-distancia, encomendas descartadas
+    bateria-distancia
+    encomendas descartadas
+    estoque
 
 */
 #include <stdio.h>
@@ -85,6 +87,7 @@ void escolhe_armazem(Encomenda *novoNode);
 void escolherDestino(double *buf,double x, double y);
 void initShm(Warehouse *arrayArmazens);
 void *baseCharger();
+void sinal_estatistica();
 
 int main() {
     dados = (Dados *) malloc(sizeof(Dados));
@@ -466,6 +469,7 @@ void escolheDrone(){
 
         //apaga encomenda
         novoNode=NULL;
+        sinal_estatistica();
 
     }
 }
@@ -614,4 +618,14 @@ void write_log(char* mensagem) {
         fclose(fp);
     }
     mensagem[0]='\0';
+}
+
+void sinal_estatistica(){
+
+    printf("\nInformação estatistica: \n");
+    printf("Numero total de encomendas entregues = %d\n", estatisticas->encomendas_entregues);
+    printf("Numero total de encomendas atribuidas = %d\n", estatisticas->encomendas_atribuidas);
+    printf("Numero total de produtos carregados = %d\n", estatisticas->prod_carregados);
+    printf("Numero total de produtos entregues = %d\n", estatisticas->prod_entregues);
+    printf("Tempo medio = %0.2f\n", estatisticas->tempo_medio_total);    
 }
