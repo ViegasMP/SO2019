@@ -406,25 +406,19 @@ void *controla_drone (void *id) {
             sleep(5);
         } else {
             printf("[%d]Recebi uma encomenda %s\n", arrayDrones[idDrone].id, arrayDrones[idDrone].encomenda_drone->nomeEncomenda);
-            sleep(10);
+            printf("DX: %0.2f   DY: %0.2f    AX:  %0.2f      AY:   %0.2f \n", arrayDrones[idDrone].posI[0], arrayDrones[idDrone].posI[1],
+                   arrayDrones[idDrone].encomenda_drone->coordernadasArmazem[0], arrayDrones[idDrone].encomenda_drone->coordernadasArmazem[1]);
+            while (move_towards(&arrayDrones[idDrone].posI[0], &arrayDrones[idDrone].posI[1],arrayDrones[idDrone].encomenda_drone->coordernadasArmazem[0], arrayDrones[idDrone].encomenda_drone->coordernadasArmazem[1]) >= 0) {
+                printf("DRONE %d a deslocar se para Armazem (X: %0.2f   Y: %0.2f)\n ", arrayDrones[idDrone].id,  arrayDrones[idDrone].posI[0],  arrayDrones[idDrone].posI[1]);
+                 arrayDrones[idDrone].bateria-=1;
+                //sleep(dados->unidadeT/5);
+            }
+            printf("Chegou no Armazem\n");
+            arrayDrones[idDrone].estado = 3;
+            arrayDrones[idDrone].encomenda_drone = NULL; //fase teste
 
         }
     }
-    /*while (1) {
-        if (drone->id == escolheDrone(headListaE->next)) {  //Drone a deslocar-se da base ate o armazem
-            printf("DX: %0.2f   DY: %0.2f    AX:  %0.2f      AY:   %0.2f \n", drone->posI[0], drone->posI[1],
-                   drone->encomenda.coordernadasArmazem[0], drone->encomenda.coordernadasArmazem[1]);
-            printf("Drone com ID %d a movimentar se para o Armazem\n", drone->id);
-            while (move_towards(&drone->posI[0], &drone->posI[1],drone->encomenda.coordernadasArmazem[0], drone->encomenda.coordernadasArmazem[1]) >= 0) {
-                printf("DRONE %d a deslocar se para Armazem (X: %0.2f   Y: %0.2f)\n ",drone->id, drone->posI[0], drone->posI[1]);
-                drone->bateria-=1;
-                sleep(dados->unidadeT/5);
-            }
-            printf("Chegou no Armazem\n");
-            drone->estado = 3;
-
-        }
-    } */  
 }
 
 //escolhe o drone para uma encomenda
@@ -465,19 +459,12 @@ void escolheDrone(){
             arrayDrones[idEscolhido].estado=2;   //o drone ja nao esta mais em repouso 
             printf("Drone%d mudou para %d\n",arrayDrones[idEscolhido].id,arrayDrones[idEscolhido].estado);
             novoNode->id_drone = arrayDrones[idEscolhido].id;    //guarda em encomenda o id do drone responsavel por ela
-            printf("1\n");
             arrayDrones[idEscolhido].encomenda_drone = malloc(sizeof(Encomenda));
             //guarda as informacoes da encomenda no drone
             arrayDrones[idEscolhido].encomenda_drone = novoNode;
-            printf("11\n");
             arrayDrones[idEscolhido].encomenda_drone->hora = novoNode ->hora;
-            printf("12\n");
             arrayDrones[idEscolhido].encomenda_drone->min = novoNode ->min;
-            printf("13\n");
-            arrayDrones[idEscolhido].encomenda_drone->seg = novoNode ->seg;
-
-            printf("Guardei %s %d\n", arrayDrones[idEscolhido].encomenda_drone->nomeEncomenda, arrayDrones[idEscolhido].encomenda_drone->id_drone);
-        
+            arrayDrones[idEscolhido].encomenda_drone->seg = novoNode ->seg;        
             //atualiza estatisticas
             pthread_mutex_lock(&mutexes->write_stats);
             estatisticas->encomendas_atribuidas += 1;
