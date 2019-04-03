@@ -95,9 +95,11 @@ int main() {
     char *produto = (char *) malloc(sizeof(char) * 255);
     pid_t novo_processo;
     Warehouse *arrayArmazens=NULL;
-    int armazemN = 1;
+    int armazemN = 0;
     time_t tempo = time(NULL);
     struct tm *t = localtime(&tempo);
+
+    srand(time(NULL));
 
     novoNode = malloc(sizeof(Encomenda));
     novoNode->nomeEncomenda = "Encomenda Teste";
@@ -179,7 +181,7 @@ int main() {
             arrayArmazens[i].nome = nome;
             arrayArmazens[i].coordenadas[0] = x;
             arrayArmazens[i].coordenadas[1] = y;
-            arrayArmazens[i].idArmazem = i + 1;
+            arrayArmazens[i].idArmazem = i;
 
 
             fgets(info, MAX_BUFFER, fp);
@@ -239,40 +241,25 @@ int main() {
             armazemN++;
         }
     }
-    while(wait(NULL)>0);
-    //generateStock();
-    //sleep(1);
+
+    generateStock();
+
+    while(wait(NULL)>0);   
 }
 
 //Gera reabastecimento de stock
 void generateStock(){
-    int i = 1;
-    int contador = 1;
-    char prods[128][100];
-    int f = 0;
-    while(dados->tipos_produtos[f] != NULL)
-    {
-        strcpy(prods[f],dados->tipos_produtos[f]);
-        f++ ;
+    int contador = 0;
+    while(1) {
+        int k = rand()%3;
+        armazensShm[contador].produtos[k].qt+=dados->qtd;
+        printf("Armazem %d atualizado: %d produto %s\n", armazensShm[contador].idArmazem, armazensShm[contador].produtos[k].qt, armazensShm[contador].produtos[k].produto);
+        contador++;
+        if(contador >= dados->numWh) {
+            contador = 0;
+        }
+        sleep(dados->f_abast);
     }
-    printf("%s\n%s\n%s\n%s\n",prods[0],prods[1],prods[2],prods[3]);
-    /*while(1) {
-        if(i%dados->numWh+1 == contador) {
-            int k = rand()%f;
-            long mtype = contador;
-            //maisStock atualiza;
-            //atualiza.mtype = mtype;
-            //atualiza.num_products = dados->qtd;
-            //strcpy(atualiza.nome_prod,prods[k]);
-            //atualiza.comentario = 1;
-            //sleep(dados->f_abast);
-            contador++;
-        }
-        if(contador > dados->numWh) {
-            contador = 1;
-        }
-        i++ ;
-    }*/
 }
 
 // Inicializar mutexes
@@ -420,7 +407,7 @@ void *controla_drone (void *id) {
             arrayDrones[idDrone].encomenda_drone = NULL; //fase teste
 
         }
-        //printf("[%d] tou aqui\n", idDrone);
+        
         sleep(1);
 
     }
