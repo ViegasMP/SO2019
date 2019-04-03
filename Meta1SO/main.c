@@ -4,7 +4,7 @@
     gcc main.c -lpthread -D_REENTRANT -Wall -o prog estruturas.h drone_movement.c drone_movement.h  -lm
     echo "ORDER REQ_1 Prod:A, 5 to: 300, 100" >input_pipe
 
-	bateria-distancia, encomendas descartadas
+    bateria-distancia, encomendas descartadas
 
 */
 #include <stdio.h>
@@ -225,7 +225,7 @@ int main() {
     novo_processo = processo_gestor;
     novo_processo = fork();
     for (i = 0; i < (dados->numWh + 1); i++) {
-    	//Cria processo central
+        //Cria processo central
         if (i == 0) {
             if (novo_processo == 0) { //guardar na variavel apenas para o processo central
                 processo_central = getpid();
@@ -239,8 +239,9 @@ int main() {
             armazemN++;
         }
     }
-    generateStock();
-    sleep(1);
+    while(wait(NULL)>0);
+    //generateStock();
+    //sleep(1);
 }
 
 //Gera reabastecimento de stock
@@ -255,23 +256,23 @@ void generateStock(){
         f++ ;
     }
     printf("%s\n%s\n%s\n%s\n",prods[0],prods[1],prods[2],prods[3]);
-    while(1) {
+    /*while(1) {
         if(i%dados->numWh+1 == contador) {
             int k = rand()%f;
             long mtype = contador;
-            maisStock atualiza;
-            atualiza.mtype = mtype;
-            atualiza.num_products = dados->qtd;
-            strcpy(atualiza.nome_prod,prods[k]);
-            atualiza.comentario = 1;
-            sleep(dados->f_abast);
+            //maisStock atualiza;
+            //atualiza.mtype = mtype;
+            //atualiza.num_products = dados->qtd;
+            //strcpy(atualiza.nome_prod,prods[k]);
+            //atualiza.comentario = 1;
+            //sleep(dados->f_abast);
             contador++;
         }
         if(contador > dados->numWh) {
             contador = 1;
         }
         i++ ;
-    }
+    }*/
 }
 
 // Inicializar mutexes
@@ -325,7 +326,7 @@ void init_mutex(){
 
 //inicializa estruturas de memória partilhada
 void initShm(Warehouse *arrayArmazens){
-	//inicia memoria partilhada
+    //inicia memoria partilhada
     if ((shmid_estats = shmget(IPC_PRIVATE, sizeof(Estats), IPC_CREAT | 0766)) < 0) {
         printf("Erro no smget\n");
         exit(1);
@@ -392,12 +393,13 @@ void criaArmazens(int n) {
     mensagem[0] = '\0';
 
     fflush(stdout);
+    exit(0);
 }
 
 //Movimentacao do drone ate armazem
 void *controla_drone (void *id) {
 
-	//idDrone vai ter o indice do array de drones para encontrar o id desse drone
+    //idDrone vai ter o indice do array de drones para encontrar o id desse drone
     int idDrone = *(int*)id;
     printf("[%d] Sou um drone com id: %d\n", idDrone, arrayDrones[idDrone].id);
     while(1){
@@ -418,15 +420,16 @@ void *controla_drone (void *id) {
             arrayDrones[idDrone].encomenda_drone = NULL; //fase teste
 
         }
+        //printf("[%d] tou aqui\n", idDrone);
+        sleep(1);
+
     }
 }
 
 //escolhe o drone para uma encomenda
 void escolheDrone(){
     printf("\nSELECIONAR O DRONE PARA A ENCOMENDA FEITA\n");
-    int distMin=dados->max_x+dados->max_y;
-    int idEscolhido=-1;
-    int distancia=0;
+
 
     printf("Encomenda: %s\n", novoNode->nomeEncomenda);
     printf("prod: %s\n", novoNode->tipo_produto);
@@ -435,47 +438,48 @@ void escolheDrone(){
     printf("posF: %f %f\n", novoNode->coordernadasArmazem[0], novoNode->coordernadasArmazem[1]);
 
     printf("\n");
-    while(1){
-        for(int i=0;i<dados->n_drones; i++){
-            if(arrayDrones[i].estado == 1 || arrayDrones[i].estado == 5){ //se o drone tiver desocupado
-                //printf("drone desocupado\n");
-                //calcular distancia
-                //printf("distancia = %d\n", distancia);
-                distancia = distance(arrayDrones[i].posI[0],arrayDrones[i].posI[1],novoNode->coordernadasArmazem[0],novoNode->coordernadasArmazem[1]);
-                //printf("distancia = %d\n", distancia);
-                if(distancia < arrayDrones[i].bateria){       
-                    if(distancia < distMin){
-                    //se a distancia for menor que a distancia minima atual, a nossa nova distancia minima e essa
-                    //id do drone escolhido e atualizado
-                        distMin=distancia;
-                        idEscolhido=i;
-                    }
+    
+    int distMin=dados->max_x+dados->max_y;
+    int idEscolhido=-1;
+    int distancia=0;
+
+    for(int i=0;i<dados->n_drones; i++){
+        if(arrayDrones[i].estado == 1 || arrayDrones[i].estado == 5){ //se o drone tiver desocupado
+            //printf("drone desocupado\n");
+            //calcular distancia
+            //printf("distancia = %d\n", distancia);
+            distancia = distance(arrayDrones[i].posI[0],arrayDrones[i].posI[1],novoNode->coordernadasArmazem[0],novoNode->coordernadasArmazem[1]);
+            //printf("distancia = %d\n", distancia);
+            if(distancia < arrayDrones[i].bateria){       
+                if(distancia < distMin){
+                //se a distancia for menor que a distancia minima atual, a nossa nova distancia minima e essa
+                //id do drone escolhido e atualizado
+                    distMin=distancia;
+                    idEscolhido=i;
                 }
             }
         }
+    }
 
-        printf("idEscolhido = %d\n", idEscolhido);
-        if(idEscolhido!=-1){
-            arrayDrones[idEscolhido].estado=2;   //o drone ja nao esta mais em repouso 
-            printf("Drone%d mudou para %d\n",arrayDrones[idEscolhido].id,arrayDrones[idEscolhido].estado);
-            novoNode->id_drone = arrayDrones[idEscolhido].id;    //guarda em encomenda o id do drone responsavel por ela
-            arrayDrones[idEscolhido].encomenda_drone = malloc(sizeof(Encomenda));
-            //guarda as informacoes da encomenda no drone
-            arrayDrones[idEscolhido].encomenda_drone = novoNode;
-            arrayDrones[idEscolhido].encomenda_drone->hora = novoNode ->hora;
-            arrayDrones[idEscolhido].encomenda_drone->min = novoNode ->min;
-            arrayDrones[idEscolhido].encomenda_drone->seg = novoNode ->seg;        
-            //atualiza estatisticas
-            pthread_mutex_lock(&mutexes->write_stats);
-            estatisticas->encomendas_atribuidas += 1;
-            pthread_mutex_unlock(&mutexes->write_stats);
+    printf("idEscolhido = %d\n", idEscolhido);
+    if(idEscolhido!=-1){
+        arrayDrones[idEscolhido].estado=2;   //o drone ja nao esta mais em repouso 
+        printf("Drone%d mudou para %d\n",arrayDrones[idEscolhido].id,arrayDrones[idEscolhido].estado);
+        novoNode->id_drone = arrayDrones[idEscolhido].id;    //guarda em encomenda o id do drone responsavel por ela
+        arrayDrones[idEscolhido].encomenda_drone = malloc(sizeof(Encomenda));
+        //guarda as informacoes da encomenda no drone
+        arrayDrones[idEscolhido].encomenda_drone = novoNode;
+        arrayDrones[idEscolhido].encomenda_drone->hora = novoNode ->hora;
+        arrayDrones[idEscolhido].encomenda_drone->min = novoNode ->min;
+        arrayDrones[idEscolhido].encomenda_drone->seg = novoNode ->seg;        
+        //atualiza estatisticas
+        pthread_mutex_lock(&mutexes->write_stats);
+        estatisticas->encomendas_atribuidas += 1;
+        pthread_mutex_unlock(&mutexes->write_stats);
 
-            //apaga encomenda
-            novoNode=NULL;
+        //apaga encomenda
+        novoNode=NULL;
 
-        }
-        
-        sleep(15);
     }
 }
 
@@ -503,13 +507,13 @@ void escolheArmazem(){
 }
 
 void printDrones(){
-	for(int i=0; i<dados->n_drones; i++){
-		printf("Drone: %d\n", arrayDrones[i].id);
-		printf("estado: %d\n", arrayDrones[i].estado);
-		printf("posX: %f %f\n", arrayDrones[i].posI[0], arrayDrones[i].posI[1]);
-		printf("posY: %f %f\n", arrayDrones[i].posF[0], arrayDrones[i].posF[1]);
-		printf("\n");
-	}
+    for(int i=0; i<dados->n_drones; i++){
+        printf("Drone: %d\n", arrayDrones[i].id);
+        printf("estado: %d\n", arrayDrones[i].estado);
+        printf("posX: %f %f\n", arrayDrones[i].posI[0], arrayDrones[i].posI[1]);
+        printf("posY: %f %f\n", arrayDrones[i].posF[0], arrayDrones[i].posF[1]);
+        printf("\n");
+    }
 }
 
 //cria qtd drones
@@ -558,21 +562,22 @@ void criaDrones(int numI, int qtd){
 
 //Carregar bateria dos drones na base
 void *baseCharger(){
-	while(1){
-		for(int i=0; i<dados->n_drones; i++){
-			if(arrayDrones[i].estado == 1 && arrayDrones[i].bateria + 5 < dados->bMax){
-				//se o drone estiver na base e sua bateria incrementada for inferior ao maximo
-				arrayDrones[i].bateria+=5; //aumenta cinco unidades
+    while(1){
+        for(int i=0; i<dados->n_drones; i++){
+            if(arrayDrones[i].estado == 1 && arrayDrones[i].bateria + 5 < dados->bMax){
+                //se o drone estiver na base e sua bateria incrementada for inferior ao maximo
+                arrayDrones[i].bateria+=5; //aumenta cinco unidades
                 printf("[%d] com bateria %d\n", arrayDrones[i].id, arrayDrones[i].bateria);
-			}
-		}
-		sleep(2); //a cada unidade de tempo
-	}
+            }
+        }
+        sleep(2); //a cada unidade de tempo
+    }
+
 }
 
 //gestao do pipe e dos drones
 void central(){
-	charger = malloc(sizeof(pthread_t));
+    charger = (pthread_t)malloc(sizeof(pthread_t));
     headListaE = (Encomenda *) malloc(sizeof(Encomenda));
     headListaE->next = NULL;
 
@@ -584,27 +589,33 @@ void central(){
     }
     escolheArmazem();
     escolheDrone();
+
+    for (int i = 0; i < dados->n_drones; i++) {
+        if(pthread_join(my_thread[i], NULL)==0){
+            printf("thread [%d] morreu\n", i);
+        }
+    }
 }
 
 void destruirShM_estats(){
-	if(shmdt(estatisticas)==-1){
-		printf("erro shmdt\n");
-	}
-	if(shmctl(shmid_estats,IPC_RMID, NULL)==-1){
-		printf("erro shmctl\n");
-	}
-	printf("memoria partilhada estats destruida\n");
-		
+    if(shmdt(estatisticas)==-1){
+        printf("erro shmdt\n");
+    }
+    if(shmctl(shmid_estats,IPC_RMID, NULL)==-1){
+        printf("erro shmctl\n");
+    }
+    printf("memoria partilhada estats destruida\n");
+        
 }
 void destruirShM_ware(){
-	if(shmdt(armazensShm)==-1){
-		printf("erro shmdt\n");
-	}
-	if(shmctl(shmid_armazens,IPC_RMID, NULL)==-1){
-		printf("erro shmctl\n");
-	}
-	printf("memoria partilhada armazens destruida\n");
-		
+    if(shmdt(armazensShm)==-1){
+        printf("erro shmdt\n");
+    }
+    if(shmctl(shmid_armazens,IPC_RMID, NULL)==-1){
+        printf("erro shmctl\n");
+    }
+    printf("memoria partilhada armazens destruida\n");
+        
 }
 
 //adiciona no ficheiro log a mensagem fornecida
@@ -617,5 +628,3 @@ void write_log(char* mensagem) {
     }
     mensagem[0]='\0';
 }
-
-
