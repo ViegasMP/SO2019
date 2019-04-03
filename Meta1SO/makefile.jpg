@@ -1,5 +1,0 @@
-main: main.c
-	 gcc main.c -lpthread -D_REENTRANT -Wall -o prog estruturas.h drone_movement.c drone_movement.h  -lm
-
-
-

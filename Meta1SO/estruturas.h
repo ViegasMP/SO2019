@@ -30,7 +30,6 @@
 
 #include "drone_movement.c"
 
-#define PIPE_NAME "input_pipe"
 #define MAX_BUFFER  1000
 
 typedef struct produtos {
@@ -46,15 +45,6 @@ typedef struct warehouse {
     struct warehouse *next;
     pid_t pid;
 }Warehouse;
-
-typedef struct { //Struct usado para guardar as informacoes da atualizacao de um stock
-    long mtype;
-    int dronetype;
-    int num_products;
-    int id_armazem;
-    char nome_prod[128];
-    int comentario;
-}maisStock;
 
 typedef struct encomenda { // Struct usado para guardar as informacoes de uma encomenda
     char *nomeEncomenda;
@@ -98,13 +88,6 @@ typedef struct dados{ //Struct usado para guardar as informaçoes gerais do arma
     int max_x, max_y, n_drones, f_abast, qtd, unidadeT, numWh, bInit, bMax;
     char *tipos_produtos[MAX_BUFFER];
 }Dados;
-/*
-// Semáforos
-typedef struct { //Struct dos semaforos
-    sem_t mq;
-    sem_t mq2;
-} sem_struct;
-*/
 
 // Mutexes
 typedef struct {    //Struct dos mutexes

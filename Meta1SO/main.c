@@ -75,16 +75,13 @@ void generateStock();
 void escolheDrone();
 void escolheArmazem();
 void sinal_estatistica();
-void sinal_saida (int sig);
 void *controla_drone(void *id_ptr);
 void write_log(char* mensagem);
-void ArmazensProcess();
 void criaArmazens(int n);
 void central();
 void init_mutex();
 void criaDrones(int numI, int qtd);
 void escolhe_armazem(Encomenda *novoNode);
-void escolherDestino(double *buf,double x, double y);
 void initShm(Warehouse *arrayArmazens);
 void *baseCharger();
 void sinal_estatistica();
@@ -104,6 +101,7 @@ int main() {
 
     srand(time(NULL));
 
+    //Encomenda teste para Meta 1
     novoNode = malloc(sizeof(Encomenda));
     novoNode->nomeEncomenda = "Encomenda Teste";
     novoNode->qtd = 5;
@@ -111,7 +109,6 @@ int main() {
     novoNode->coordenadas[0] = (double) 300;
     novoNode->coordenadas[1] = (double) 100;
     novoNode->nSque = id_encomenda;
-
 
     //limpa o conteudo existente em log.txt e guarda info do inicio do programa
     processo_gestor = getpid();
@@ -544,8 +541,8 @@ void criaDrones(int numI, int qtd){
             perror("Error creating thread\n");
             exit(1);
         }
-        printf("\t\t->Thread Drone%d criada no estado %d com bateria %d\t\t", arrayDrones[i].id, arrayDrones[i].estado, arrayDrones[i].bateria);
-        printf("\t\tBase x: %0.2f Base Y: %0.2f\n",arrayDrones[i].posI[0],arrayDrones[i].posI[1]);
+        printf("\t\t->Thread Drone%d criada no estado %d com bateria %d", arrayDrones[i].id, arrayDrones[i].estado, arrayDrones[i].bateria);
+        printf("\tBase x: %0.2f Base Y: %0.2f\n",arrayDrones[i].posI[0],arrayDrones[i].posI[1]);
     }
     sleep(5);
     printf("->Threads Criadas\n");
@@ -563,7 +560,6 @@ void *baseCharger(){
         }
         sleep(2); //a cada unidade de tempo
     }
-
 }
 
 //gestao do pipe e dos drones
@@ -595,9 +591,9 @@ void destruirShM_estats(){
     if(shmctl(shmid_estats,IPC_RMID, NULL)==-1){
         printf("erro shmctl\n");
     }
-    printf("memoria partilhada estats destruida\n");
-        
+    printf("memoria partilhada estats destruida\n");        
 }
+
 void destruirShM_ware(){
     if(shmdt(armazensShm)==-1){
         printf("erro shmdt\n");
@@ -605,8 +601,7 @@ void destruirShM_ware(){
     if(shmctl(shmid_armazens,IPC_RMID, NULL)==-1){
         printf("erro shmctl\n");
     }
-    printf("memoria partilhada armazens destruida\n");
-        
+    printf("memoria partilhada armazens destruida\n");      
 }
 
 //adiciona no ficheiro log a mensagem fornecida
@@ -622,10 +617,11 @@ void write_log(char* mensagem) {
 
 void sinal_estatistica(){
 
-    printf("\nInformação estatistica: \n");
+    printf("\n--------Informação estatistica--------\n");
     printf("Numero total de encomendas entregues = %d\n", estatisticas->encomendas_entregues);
     printf("Numero total de encomendas atribuidas = %d\n", estatisticas->encomendas_atribuidas);
     printf("Numero total de produtos carregados = %d\n", estatisticas->prod_carregados);
     printf("Numero total de produtos entregues = %d\n", estatisticas->prod_entregues);
-    printf("Tempo medio = %0.2f\n", estatisticas->tempo_medio_total);    
+    printf("Tempo medio = %0.2f\n", estatisticas->tempo_medio_total);
+    printf("\n--------------------------------------\n");    
 }
