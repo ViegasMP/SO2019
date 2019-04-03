@@ -552,8 +552,8 @@ void criaDrones(int numI, int qtd){
 void *baseCharger(){
     while(1){
         for(int i=0; i<dados->n_drones; i++){
-            if(arrayDrones[i].estado == 1 && arrayDrones[i].bateria + 5 < dados->bMax){
-                //se o drone estiver na base e sua bateria incrementada for inferior ao maximo
+            if(arrayDrones[i].estado == 1 && arrayDrones[i].bateria < dados->bMax){
+                //se o drone estiver na base e sua bateria for inferior ao maximo
                 arrayDrones[i].bateria+=5; //aumenta cinco unidades
                 printf("[%d] com bateria %d\n", arrayDrones[i].id, arrayDrones[i].bateria);
             }
