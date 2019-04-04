@@ -1,7 +1,7 @@
 /*
     Ana Luisa da Rocha Alves Rainha Coelho - 2015231777
     Maria Paula de Alencar Viegas  -  2017125592
-    gcc main.c -lpthread -D_REENTRANT -Wall -o prog estruturas.h drone_movement.c drone_movement.h  -lm
+    gcc main.c -lpthread -D_REENTRANT -Wall -o prog estruturas.h  -lm
     echo "ORDER REQ_1 Prod:A, 5 to: 300, 100" >input_pipe
 
     bateria-distancia
