@@ -1,0 +1,5 @@
+17:11:52 Inicio do programa [6019]
+->17:11:52 Mutexes criados
+->17:11:52 Semaforos criados
+17:11:52 Warehouse0 criada (id = 6021)
+17:11:52 Warehouse1 criada (id = 6022)

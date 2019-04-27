@@ -90,15 +90,3 @@ typedef struct dados{ //Struct usado para guardar as informaçoes gerais do arma
     int max_x, max_y, n_drones, f_abast, qtd, unidadeT, numWh, bInit, bMax;
     char *tipos_produtos[MAX_BUFFER];
 }Dados;
-
-// Mutexes
-typedef struct {    //Struct dos mutexes
-    pthread_mutex_t write_file;
-    pthread_mutex_t get_queue;
-    pthread_mutex_t ctrlc;
-    pthread_mutex_t write_stats;
-    pthread_mutex_t write_armazens;
-    pthread_mutex_t retirar_mq;
-    pthread_mutex_t drones;
-} mutex_struct;
-

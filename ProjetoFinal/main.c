@@ -7,11 +7,8 @@
     bateria-distancia
     encomendas descartadas
 
-    sleep unidade de tempo MILISEGUNDO
+    usleep?
     espera ativa do drone
-    sem named
-    troca mutex por sem
-    tirar mutex MQ
     variavel de condicao
 
 */
@@ -69,9 +66,17 @@ pid_t processo_armazem, pidWh;
 pthread_t *my_thread, charger;
 Drones *arrayDrones;
 
-//int shm_mutex;
-mutex_struct *mutexes;
+int shm_mutex;
 pthread_cond_t cond_nao_escolhido = PTHREAD_COND_INITIALIZER;
+
+// Mutexes
+pthread_mutex_t mutex_drones;
+
+// Semáforos
+sem_t *sem_write_stats;
+sem_t *sem_write_armazens;
+sem_t *sem_write_file;
+
 
 //exemplo encomenda
 Encomenda *novoNode;
@@ -86,6 +91,7 @@ void write_log(char* mensagem);
 void criaArmazens(int n);
 void central();
 void init_mutex();
+void init_sem();
 void criaDrones(int numI, int qtd);
 void escolhe_armazem(Encomenda *novoNode);
 void initShm(Warehouse *arrayArmazens);
@@ -224,8 +230,9 @@ int main() {
 
     //ficheiro lido
 
-    //inicializa os mutexes
+    //inicializa mutexes e semaforos
     init_mutex();
+    init_sem();
 
     //cria shared mem
     initShm(arrayArmazens);
@@ -272,48 +279,35 @@ void generateStock(){
 void init_mutex(){
     time_t tempo = time(NULL);
     struct tm *t = localtime(&tempo);
-    if((mutex_shmid = shmget(IPC_PRIVATE, sizeof(mutex_struct*), IPC_CREAT|0700))<0){
-        perror("Error - shmget() of mutexes struct");
-    }
 
-    if((mutexes = (mutex_struct*) shmat(mutex_shmid, NULL, 0)) == (mutex_struct*)-1){
-        perror("Error - shmat() of mutexes struct");
-    }
-
-    // escrita log file
-    if(pthread_mutex_init(&mutexes->write_file, NULL) != 0) {
-        perror("Error - init() of mutexes->write_file");
-    }
-
-    if(pthread_mutex_init(&mutexes->get_queue, NULL) != 0) {
-        perror("Error - init() of mutexes->get_queue");
-    }
-
-    if(pthread_mutex_init(&mutexes->ctrlc, NULL) != 0) {
-        perror("Error - init() of mutexes->ctrlc");
-    }
-
-    if(pthread_mutex_init(&mutexes->write_stats, NULL) != 0) {
-        perror("Error - init() of mutexes->write_stats");
-    }
-
-    if(pthread_mutex_init(&mutexes->retirar_mq, NULL) != 0) {
-        perror("Error - init() of mutexes->retirar_mq");
-    }
-
-    if(pthread_mutex_init(&mutexes->write_armazens, NULL) != 0) {
-        perror("Error - init() of mutexes->write_armazens");
-    }
-
-    if(pthread_mutex_init(&mutexes->drones, NULL) != 0) {
-        perror("Error - init() of mutexes->drones");
+    if(pthread_mutex_init(&mutex_drones, NULL) != 0) {
+        perror("Error - init() of mutexes_drones");
     }
 
     sprintf(mensagem, "->%d:%d:%d Mutexes criados\n",t->tm_hour,t->tm_min,t->tm_sec);
     printf("%s", mensagem);
-    pthread_mutex_lock(&mutexes->write_file);
+    sem_wait(sem_write_file);
     write_log(mensagem);
-    pthread_mutex_unlock(&mutexes->write_file);
+    sem_post(sem_write_file);
+    mensagem[0]='\0';
+}
+// Inicializar semaforos
+void init_sem(){
+    time_t tempo = time(NULL);
+    struct tm *t = localtime(&tempo);
+
+    sem_unlink("sem_write_armazens");
+    sem_unlink("sem_write_stats");
+    sem_unlink("sem_write_file");
+    sem_write_armazens = sem_open("sem_write_armazens", O_CREAT | O_EXCL, 0700, 1);
+    sem_write_stats = sem_open("sem_write_stats", O_CREAT | O_EXCL, 0700, 1);
+    sem_write_file = sem_open("sem_write_file", O_CREAT | O_EXCL, 0700, 1);
+
+    sprintf(mensagem, "->%d:%d:%d Semaforos criados\n",t->tm_hour,t->tm_min,t->tm_sec);
+    printf("%s", mensagem);
+    sem_wait(sem_write_file);
+    write_log(mensagem);
+    sem_post(sem_write_file);
     mensagem[0]='\0';
 }
 
@@ -374,15 +368,17 @@ void criaArmazens(int n) {
         }
     }
     
-    pthread_mutex_lock(&mutexes->write_armazens);
+    sem_wait(sem_write_armazens);
     armazensShm[n].pid = getpid();
-    pthread_mutex_unlock(&mutexes->write_armazens);
+    sem_post(sem_write_armazens);
     
     printf("Armazem %s coordernadas x: %d y: %d, produto : %s qt:%d\n", aux.nome, aux.coordenadas[0],
            aux.coordenadas[1], aux.produtos[0].produto, aux.produtos[0].qt);
     
     sprintf(mensagem, "%d:%d:%d Warehouse%d criada (id = %ld)\n", t->tm_hour, t->tm_min, t->tm_sec, n, (long) getpid());
+    sem_wait(sem_write_file);
     write_log(mensagem);
+    sem_post(sem_write_file);
     mensagem[0] = '\0';
 
     fflush(stdout);
@@ -398,7 +394,7 @@ void *controla_drone (void *id) {
     while(1){
         if(arrayDrones[idDrone].encomenda_drone == NULL){
             printf("[%d] Nao tenho nenhuma encomenda :(\n", idDrone);
-            sleep(5);
+            sleep(dados->unidadeT);
         } else {
             printf("[%d]Recebi uma encomenda %s\n", arrayDrones[idDrone].id, arrayDrones[idDrone].encomenda_drone->nomeEncomenda);
             printf("DX: %0.2f   DY: %0.2f    AX:  %0.2f      AY:   %0.2f \n", arrayDrones[idDrone].posI[0], arrayDrones[idDrone].posI[1],
@@ -406,7 +402,6 @@ void *controla_drone (void *id) {
             while (move_towards(&arrayDrones[idDrone].posI[0], &arrayDrones[idDrone].posI[1],arrayDrones[idDrone].encomenda_drone->coordernadasArmazem[0], arrayDrones[idDrone].encomenda_drone->coordernadasArmazem[1]) >= 0) {
                 printf("DRONE %d a deslocar se para Armazem (X: %0.2f   Y: %0.2f)\n ", arrayDrones[idDrone].id,  arrayDrones[idDrone].posI[0],  arrayDrones[idDrone].posI[1]);
                  arrayDrones[idDrone].bateria-=1;
-                //sleep(dados->unidadeT/5);
             }
             printf("Chegou no Armazem\n");
             arrayDrones[idDrone].estado = 3;
@@ -414,7 +409,7 @@ void *controla_drone (void *id) {
 
         }
         
-        sleep(1);
+        sleep(dados->unidadeT);
 
     }
 }
@@ -466,9 +461,9 @@ void escolheDrone(){
         arrayDrones[idEscolhido].encomenda_drone->min = novoNode ->min;
         arrayDrones[idEscolhido].encomenda_drone->seg = novoNode ->seg;        
         //atualiza estatisticas
-        pthread_mutex_lock(&mutexes->write_stats);
+        sem_wait(sem_write_stats);
         estatisticas->encomendas_atribuidas += 1;
-        pthread_mutex_unlock(&mutexes->write_stats);
+        sem_post(sem_write_stats);
 
         //apaga encomenda
         novoNode=NULL;
@@ -487,9 +482,9 @@ void escolheArmazem(){
                     novoNode->coordernadasArmazem[0] = armazensShm[k].coordenadas[0];
                     novoNode->coordernadasArmazem[1] = armazensShm[k].coordenadas[1];
                     novoNode->idArmazem = k;
-                    pthread_mutex_lock(&mutexes->write_armazens);
+                    sem_wait(sem_write_armazens);
                     armazensShm[k].produtos[i].qt =  armazensShm[k].produtos[i].qt - novoNode->qtd;
-                    pthread_mutex_unlock(&mutexes->write_armazens);
+                    sem_post(sem_write_armazens);
                     flag = 0;
                     break;
                 }
@@ -550,7 +545,7 @@ void criaDrones(int numI, int qtd){
         printf("\t\t->Thread Drone%d criada no estado %d com bateria %d", arrayDrones[i].id, arrayDrones[i].estado, arrayDrones[i].bateria);
         printf("\tBase x: %0.2f Base Y: %0.2f\n",arrayDrones[i].posI[0],arrayDrones[i].posI[1]);
     }
-    sleep(5);
+    sleep(dados->unidadeT);
     printf("->Threads Criadas\n");
 }
 
@@ -564,7 +559,7 @@ void *baseCharger(){
                 printf("[%d] com bateria %d\n", arrayDrones[i].id, arrayDrones[i].bateria);
             }
         }
-        sleep(2); //a cada unidade de tempo
+        sleep(dados->unidadeT); //a cada unidade de tempo
     }
 }
 
