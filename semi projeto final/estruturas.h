@@ -94,11 +94,21 @@ typedef struct dados{ //Struct usado para guardar as informaçoes gerais do arma
 // Mutexes
 typedef struct {    //Struct dos mutexes
     pthread_mutex_t write_file;
-    pthread_mutex_t get_queue;
     pthread_mutex_t ctrlc;
     pthread_mutex_t write_stats;
     pthread_mutex_t write_armazens;
-    pthread_mutex_t retirar_mq;
     pthread_mutex_t drones;
 } mutex_struct;
+
+
+//Struct das mensagens com atualizacao do estoque
+typedef struct message{
+    int mtype;
+    int idArmazem;
+    int prod_type;
+    char prod_type_name[50];
+    int qtd;
+    int comentario;
+    int idDrone;
+}msg;
 

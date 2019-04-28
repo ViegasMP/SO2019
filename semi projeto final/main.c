@@ -11,8 +11,9 @@
     espera ativa do drone
     sem named
     troca mutex por sem
-    tirar mutex MQ
     variavel de condicao
+
+    fila de mensagem
 
 */
 #include <stdio.h>
@@ -49,6 +50,7 @@ int id_encomenda = 0;
 Dados *dados;
 Warehouse *armazens;
 char mensagem[MAX_BUFFER];
+FILE *fp_log;
 
 //memoria partilhada
 Estats *estatisticas;
@@ -69,18 +71,29 @@ pid_t processo_armazem, pidWh;
 pthread_t *my_thread, charger;
 Drones *arrayDrones;
 
-//int shm_mutex;
+//Mutexes
 mutex_struct *mutexes;
 pthread_cond_t cond_nao_escolhido = PTHREAD_COND_INITIALIZER;
 
+// Semáforos
+sem_t *sem_write_stats;
+sem_t *sem_write_armazens;
+sem_t *sem_write_file;
+sem_t *sem_ctrlC;
+
 //exemplo encomenda
 Encomenda *novoNode;
+
+//sinal
+int exit_flag=0;
+
+//fila de mensagens
+int mq_id;
 
 //funcoes
 void generateStock();
 void escolheDrone();
 void escolheArmazem();
-void sinal_estatistica();
 void *controla_drone(void *id_ptr);
 void write_log(char* mensagem);
 void criaArmazens(int n);
@@ -90,7 +103,15 @@ void criaDrones(int numI, int qtd);
 void escolhe_armazem(Encomenda *novoNode);
 void initShm(Warehouse *arrayArmazens);
 void *baseCharger();
-void sinal_estatistica();
+void sinal_estatistica(int signum);
+void init_sem();
+void destruir_threads();
+void close_sem();
+void sinal_saida (int sig);
+void destruirShM_ware();
+void destruirShm_stats();
+void cria_named_pipe();
+void cria_MQ();
 
 int main() {
     dados = (Dados *) malloc(sizeof(Dados));
@@ -105,6 +126,9 @@ int main() {
     time_t tempo = time(NULL);
     struct tm *t = localtime(&tempo);
 
+    signal(SIGINT, sinal_saida);
+    signal(SIGUSR1, sinal_estatistica);
+
     srand(time(NULL));
 
     //Encomenda teste para Meta 1
@@ -116,17 +140,15 @@ int main() {
     novoNode->coordenadas[1] = (double) 100;
     novoNode->nSque = id_encomenda;
 
-    //limpa o conteudo existente em log.txt e guarda info do inicio do programa
     processo_gestor = getpid();
-    sprintf(mensagem, "%d:%d:%d Inicio do programa [%d]\n",t->tm_hour,t->tm_min,t->tm_sec,getpid());
+    sprintf(mensagem, "\n\n\n%d:%d:%d Inicio do programa [%d]\n",t->tm_hour,t->tm_min,t->tm_sec,getpid());
     printf("%s", mensagem);
-    FILE *fpLog = fopen("log.txt","w");
-    if(fpLog != NULL){
-        fseek(fpLog, 0, SEEK_END);
-        fprintf(fpLog,"%s", mensagem);
-        fclose(fpLog);
-    }
-    mensagem[0] = '\0';
+    //abre ficheiro log
+    fp_log = fopen("log.txt","a");
+    write_log(mensagem);
+
+    //cria fila de mensagens
+    cria_MQ();
 
     //leitura do ficheiro
     printf("\n----------Informacoes do ficheiro--------\n");
@@ -236,6 +258,7 @@ int main() {
         //Cria processo central
         if (i == 0) {
             if (novo_processo == 0) { //guardar na variavel apenas para o processo central
+                //signal(SIGINT, central_exit);
                 processo_central = getpid();
                 central();
             }
@@ -258,14 +281,44 @@ void generateStock(){
     int contador = 0;
     while(1) {
         int k = rand()%3;
-        armazensShm[contador].produtos[k].qt+=dados->qtd;
-        printf("Armazem %d atualizado: %d produto %s\n", armazensShm[contador].idArmazem, armazensShm[contador].produtos[k].qt, armazensShm[contador].produtos[k].produto);
+        //cria mensagem com atualizacao do stock
+        msg atualizaStock;
+        atualizaStock.idArmazem = contador;
+        atualizaStock.prod_type= k;
+        atualizaStock.qtd = dados->qtd;
+        atualizaStock.comentario=1;
+
+        //envia para a fila de mensagens
+        msgsnd(mq_id, &atualizaStock, sizeof(atualizaStock) - sizeof(long), 0);\
+
+        printf("Mensagem de atualizacao de stock enviada\n");
+        
         contador++;
         if(contador >= dados->numWh) {
             contador = 0;
         }
-        sleep(dados->f_abast);
+        sleep(dados->unidadeT/5);
     }
+}
+
+// Inicializar semaforos
+void init_sem(){
+    time_t tempo = time(NULL);
+    struct tm *t = localtime(&tempo);
+
+    sem_unlink("sem_write_armazens");
+    sem_unlink("sem_write_stats");
+    sem_unlink("sem_write_file");
+    sem_write_armazens = sem_open("sem_write_armazens", O_CREAT | O_EXCL, 0700, 1);
+    sem_write_stats = sem_open("sem_write_stats", O_CREAT | O_EXCL, 0700, 1);
+    sem_write_file = sem_open("sem_write_file", O_CREAT | O_EXCL, 0700, 1);
+
+    sprintf(mensagem, "->%d:%d:%d Semaforos criados\n",t->tm_hour,t->tm_min,t->tm_sec);
+    printf("%s", mensagem);
+    sem_wait(sem_write_file);
+    write_log(mensagem);
+    sem_post(sem_write_file);
+    mensagem[0]='\0';
 }
 
 // Inicializar mutexes
@@ -285,10 +338,6 @@ void init_mutex(){
         perror("Error - init() of mutexes->write_file");
     }
 
-    if(pthread_mutex_init(&mutexes->get_queue, NULL) != 0) {
-        perror("Error - init() of mutexes->get_queue");
-    }
-
     if(pthread_mutex_init(&mutexes->ctrlc, NULL) != 0) {
         perror("Error - init() of mutexes->ctrlc");
     }
@@ -297,9 +346,6 @@ void init_mutex(){
         perror("Error - init() of mutexes->write_stats");
     }
 
-    if(pthread_mutex_init(&mutexes->retirar_mq, NULL) != 0) {
-        perror("Error - init() of mutexes->retirar_mq");
-    }
 
     if(pthread_mutex_init(&mutexes->write_armazens, NULL) != 0) {
         perror("Error - init() of mutexes->write_armazens");
@@ -311,9 +357,9 @@ void init_mutex(){
 
     sprintf(mensagem, "->%d:%d:%d Mutexes criados\n",t->tm_hour,t->tm_min,t->tm_sec);
     printf("%s", mensagem);
-    pthread_mutex_lock(&mutexes->write_file);
+    sem_wait(sem_write_file);
     write_log(mensagem);
-    pthread_mutex_unlock(&mutexes->write_file);
+    sem_post(sem_write_file);
     mensagem[0]='\0';
 }
 
@@ -361,6 +407,17 @@ void initShm(Warehouse *arrayArmazens){
     printf("->Armazens na Shared Memory.\n");
 }
 
+//Cria fila de mensagens
+void cria_MQ(){
+
+    if((mq_id = msgget(IPC_PRIVATE, IPC_CREAT|0700)) < 0){
+        perror("Problem creating message queue");
+        exit(0);
+    }
+    printf("->MQ criada.");
+
+}
+
 //Atualiza armazens
 void criaArmazens(int n) {
     //tempo
@@ -382,10 +439,35 @@ void criaArmazens(int n) {
            aux.coordenadas[1], aux.produtos[0].produto, aux.produtos[0].qt);
     
     sprintf(mensagem, "%d:%d:%d Warehouse%d criada (id = %ld)\n", t->tm_hour, t->tm_min, t->tm_sec, n, (long) getpid());
+    sem_wait(sem_write_file);
     write_log(mensagem);
+    sem_post(sem_write_file);
     mensagem[0] = '\0';
-
     fflush(stdout);
+
+    while(1){
+        msg mensagem;
+        if(msgrcv(mq_id, &mensagem, sizeof(msg)-sizeof(long), n, 0)){
+            if(mensagem.comentario==1){
+                printf("\nStock atualizado!\n");
+                sem_wait(sem_write_armazens);
+                armazensShm[mensagem.idArmazem].produtos[mensagem.prod_type].qt += mensagem.qtd;
+                sem_post(sem_write_armazens);
+                printf("Armazem %d atualizado: %d produtos %s\n", armazensShm[mensagem.idArmazem].idArmazem, armazensShm[mensagem.idArmazem].produtos[mensagem.prod_type].qt, armazensShm[mensagem.idArmazem].produtos[mensagem.prod_type].produto);
+            }/* else if (mensagem.comentario==2){
+                printf("[%d] Armazem%d foi notificado pelo Drone%d\n", getpid(), n, mensagem.idDrone);
+                sleep(mensagem.qtd);
+                printf("[%d] Armazem notifica o Drone%d\n", getpid(), mensagem.drone_id);
+                msg msg_snd;
+                msg_snd.mtype = mensagem.mtype;
+                msg_snd.idArmazem = n;
+                strcpy(msg_snd.prod_type_name, "NONE");
+                msgsnd(mq_id, &msg_snd, sizeof(msg)-sizeof(long), 0);
+            }*/
+        }
+        
+    }
+
     exit(0);
 }
 
@@ -403,6 +485,7 @@ void *controla_drone (void *id) {
             printf("[%d]Recebi uma encomenda %s\n", arrayDrones[idDrone].id, arrayDrones[idDrone].encomenda_drone->nomeEncomenda);
             printf("DX: %0.2f   DY: %0.2f    AX:  %0.2f      AY:   %0.2f \n", arrayDrones[idDrone].posI[0], arrayDrones[idDrone].posI[1],
                    arrayDrones[idDrone].encomenda_drone->coordernadasArmazem[0], arrayDrones[idDrone].encomenda_drone->coordernadasArmazem[1]);
+            //deslocamento para carregamento
             while (move_towards(&arrayDrones[idDrone].posI[0], &arrayDrones[idDrone].posI[1],arrayDrones[idDrone].encomenda_drone->coordernadasArmazem[0], arrayDrones[idDrone].encomenda_drone->coordernadasArmazem[1]) >= 0) {
                 printf("DRONE %d a deslocar se para Armazem (X: %0.2f   Y: %0.2f)\n ", arrayDrones[idDrone].id,  arrayDrones[idDrone].posI[0],  arrayDrones[idDrone].posI[1]);
                  arrayDrones[idDrone].bateria-=1;
@@ -410,11 +493,30 @@ void *controla_drone (void *id) {
             }
             printf("Chegou no Armazem\n");
             arrayDrones[idDrone].estado = 3;
+
+            //carregamento
+            printf("[%d] Notifying Warehouse...\n", arrayDrones[idDrone].id);
+            /*msg msg_wh;
+            msg_wh.idArmazem = arrayDrones[id].encomenda_drone->idArmazem;
+            strcpy(msg_wh.prod_type, arrayDrones[id].encomenda_drone->tipo_produto);
+            msg_wh.qtd = arrayDrones[id].encomenda_drone->qtd;
+            msg_wh.drone_id = arrayDrones[id].id;
+            msgsnd(mq_id, &msg_wh, sizeof(msg_wh)-sizeof(long), 0);
+
+            msg msg_rcv;
+            msgrcv(mq_id, &msg_rcv, sizeof(msg)-sizeof(long), type, 0);
+            printf("[%d] Carregamento concluido %d\n", id);
+            sem_wait(sem_write_stats);
+            estatisticas->prod_carregados += arrayDrones[id].encomenda_drone->qtd;
+            sem_post(sem_write_stats);
+
+            arrayDrones[idDrone].estado = 4;
+            */
             arrayDrones[idDrone].encomenda_drone = NULL; //fase teste
 
         }
         
-        sleep(1);
+        sleep(dados->unidadeT/5);
 
     }
 }
@@ -472,7 +574,6 @@ void escolheDrone(){
 
         //apaga encomenda
         novoNode=NULL;
-        sinal_estatistica();
 
     }
 }
@@ -564,8 +665,20 @@ void *baseCharger(){
                 printf("[%d] com bateria %d\n", arrayDrones[i].id, arrayDrones[i].bateria);
             }
         }
-        sleep(2); //a cada unidade de tempo
+        sleep(dados->unidadeT/50); //a cada unidade de tempo
     }
+}
+
+//Cria named pipe
+void cria_named_pipe(){
+
+    if((mkfifo(PIPE_NAME, O_CREAT|O_EXCL|0600)<0) && (errno!= EEXIST)){
+        perror("Error creating named pipe: ");
+        exit(0);
+    }
+
+    printf("->Pipe criado\n");
+
 }
 
 //gestao do pipe e dos drones
@@ -574,12 +687,17 @@ void central(){
     headListaE = (Encomenda *) malloc(sizeof(Encomenda));
     headListaE->next = NULL;
 
+    //cria as threads
     criaDrones(0, dados->n_drones);
 
     if((pthread_create(&charger, NULL, baseCharger, NULL))!=0){
         perror("Error creating thread\n");
         exit(1);
     }
+
+    //cria o pipe
+    cria_named_pipe();
+
     escolheArmazem();
     escolheDrone();
 
@@ -590,7 +708,16 @@ void central(){
     }
 }
 
-void destruirShM_estats(){
+//adiciona no ficheiro log a mensagem fornecida
+void write_log(char* mensagem) { 
+    if(fp_log != NULL){
+        fseek(fp_log, 0, SEEK_END);
+        fprintf(fp_log,"%s", mensagem);
+    }
+    mensagem[0]='\0';
+}
+
+void destruirShM_stats(){
     if(shmdt(estatisticas)==-1){
         printf("erro shmdt\n");
     }
@@ -610,18 +737,31 @@ void destruirShM_ware(){
     printf("memoria partilhada armazens destruida\n");      
 }
 
-//adiciona no ficheiro log a mensagem fornecida
-void write_log(char* mensagem) { 
-    FILE *fp = fopen("log.txt","a");
-    if(fp != NULL){
-        fseek(fp, 0, SEEK_END);
-        fprintf(fp,"%s", mensagem);
-        fclose(fp);
+void destruir_threads(){
+    for (int i = 0; i < dados->n_drones; i++) {
+        if (pthread_join(my_thread[i], NULL) != 0) {
+            perror("Error joining thread");
+            exit(1);
+        }
+        free(my_thread);
     }
-    mensagem[0]='\0';
+
+    if (pthread_join(charger, NULL) != 0) {
+        perror("Error joining thread");
+        exit(1);
+    }
+}
+//Destruir semaforos
+void close_sem(){
+    sem_unlink("sem_write_armazens");
+    sem_unlink("sem_write_stats");
+    sem_unlink("sem_write_file");
+    sem_close(sem_write_armazens);
+    sem_close(sem_write_stats);
+    sem_close(sem_write_file);
 }
 
-void sinal_estatistica(){
+void sinal_estatistica(int signum){
 
     printf("\n--------Informação estatistica--------\n");
     printf("Numero total de encomendas entregues = %d\n", estatisticas->encomendas_entregues);
@@ -630,4 +770,72 @@ void sinal_estatistica(){
     printf("Numero total de produtos entregues = %d\n", estatisticas->prod_entregues);
     printf("Tempo medio = %0.2f\n", estatisticas->tempo_medio_total);
     printf("\n--------------------------------------\n");    
+}
+
+void sinal_saida (int sig){
+    //CTRL + C
+    //tempo
+    time_t tempo = time(NULL);
+    struct tm*t =localtime(&tempo);
+
+    sem_wait(sem_ctrlC);
+
+    if(getpid() == processo_central){
+        /*if(unlink(PIPE_NAME)==0){
+            printf("\tpipe fechado\n");
+        }*/
+        destruir_threads();
+
+        printf("\tcentral terminada\n" );
+
+        //matar processos
+        kill(processo_central, SIGKILL);
+
+    } else if(getpid()==processo_gestor) {
+        destruirShM_stats();
+        destruirShM_ware();
+
+        // Message Queue
+        msgctl(mq_id, IPC_RMID, NULL);
+        printf("\tmessage queue destruida\n");
+
+        close_sem();
+        printf("\tsemaforos destruidos.\n");
+
+        //liberar mallocs
+        free(dados);
+        printf("\tmallocs libertados.\n");
+
+
+        sprintf(mensagem, "%d:%d:%d Fim do programa\n",t->tm_hour,t->tm_min,t->tm_sec);
+        printf("%s", mensagem);
+        sem_wait(sem_write_file);
+        write_log(mensagem);
+        sem_post(sem_write_file);
+        fclose(fp_log);
+
+        //cond
+        pthread_cond_destroy(&cond_nao_escolhido);
+
+        printf("\tmutexes destruidos.\n");
+
+        //matar processos
+        kill(processo_gestor, SIGKILL);
+
+    } else {    //processo armazem
+
+        for(int i=0; i<dados->numWh; i++){
+            sprintf(mensagem, "%d:%d:%d Fim do processo armazem %d\n",t->tm_hour,t->tm_min,t->tm_sec,getpid());
+            printf("%s", mensagem);
+            sem_wait(sem_write_file);
+            write_log(mensagem);
+            sem_post(sem_write_file);
+            kill(armazensShm[i].pid, SIGKILL);
+        }
+        sprintf(mensagem, "%d:%d:%d Fim do programa\n",t->tm_hour,t->tm_min,t->tm_sec);
+        printf("%s", mensagem);
+        sem_wait(sem_write_file);
+        write_log(mensagem);
+        sem_post(sem_write_file);
+    }
 }
