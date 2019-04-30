@@ -237,3 +237,318 @@
 19:16:25 Fim do programa
 19:16:25 Fim do processo armazem 803
 ->19:15:32 Mutexes criados
+
+
+
+19:24:22 Inicio do programa [1099]
+->19:24:22 Mutexes criados
+->19:24:22 Mutexes criados
+->19:24:22 Mutexes criados
+19:24:22 Warehouse0 criada (id = 1101)
+->19:24:22 Mutexes criados
+19:24:22 Warehouse1 criada (id = 1102)
+19:26:7 Fim do programa
+19:26:7 Fim do processo armazem 1102
+
+
+
+19:26:11 Inicio do programa [1141]
+->19:26:11 Mutexes criados
+->19:26:11 Mutexes criados
+->19:26:11 Mutexes criados
+19:27:58 Fim do programa
+19:26:11 Warehouse0 criada (id = 1143)
+19:26:11 Warehouse1 criada (id = 1144)
+->19:26:11 Mutexes criados
+19:27:58 Fim do processo armazem 1144
+
+
+
+19:32:0 Inicio do programa [1190]
+->19:32:0 Mutexes criados
+->19:32:0 Mutexes criados
+->19:32:0 Mutexes criados
+19:32:0 Warehouse1 criada (id = 1193)
+19:32:0 Warehouse0 criada (id = 1192)
+19:32:52 Fim do programa
+->19:32:0 Mutexes criados
+19:32:52 Fim do processo armazem 1193
+
+
+
+19:33:52 Inicio do programa [1218]
+->19:33:52 Mutexes criados
+->19:33:52 Mutexes criados
+->19:33:52 Mutexes criados
+19:33:52 Warehouse1 criada (id = 1221)
+->19:33:52 Mutexes criados
+19:33:52 Warehouse0 criada (id = 1220)
+19:34:40 Fim do programa
+19:34:40 Fim do processo armazem 1221
+
+
+
+19:37:5 Inicio do programa [1286]
+->19:37:5 Mutexes criados
+->19:37:5 Mutexes criados
+19:37:5 Warehouse1 criada (id = 1289)
+->19:37:5 Mutexes criados
+19:38:28 Fim do processo armazem 1289
+19:38:28 Fim do programa
+->19:37:5 Mutexes criados
+
+
+
+19:38:38 Inicio do programa [1308]
+->19:38:38 Mutexes criados
+->19:38:38 Mutexes criados
+->19:38:38 Mutexes criados
+19:38:38 Warehouse0 criada (id = 1310)
+19:38:38 Warehouse1 criada (id = 1311)
+19:38:59 Fim do programa
+19:38:59 Fim do processo armazem 1311
+->19:38:38 Mutexes criados
+
+
+
+19:39:2 Inicio do programa [1329]
+->19:39:2 Mutexes criados
+->19:39:2 Mutexes criados
+->19:39:2 Mutexes criados
+19:39:2 Warehouse1 criada (id = 1332)
+19:39:2 Warehouse0 criada (id = 1331)
+->19:39:2 Mutexes criados
+19:39:11 Fim do programa
+19:39:11 Fim do processo armazem 1332
+
+
+
+19:44:42 Inicio do programa [1443]
+->19:44:42 Mutexes criados
+->19:44:42 Mutexes criados
+->19:44:42 Mutexes criados
+19:44:42 Warehouse0 criada (id = 1445)
+19:45:42 Fim do programa
+19:44:42 Warehouse1 criada (id = 1446)
+19:45:42 Fim do processo armazem 1446
+->19:44:42 Mutexes criados
+
+
+
+19:46:19 Inicio do programa [1504]
+->19:46:20 Mutexes criados
+->19:46:20 Mutexes criados
+->19:46:20 Mutexes criados
+19:46:26 Fim do programa
+19:46:20 Warehouse1 criada (id = 1507)
+19:46:20 Warehouse0 criada (id = 1506)
+19:46:26 Fim do processo armazem 1507
+->19:46:20 Mutexes criados
+
+
+
+19:46:33 Inicio do programa [1516]
+->19:46:33 Mutexes criados
+->19:46:33 Mutexes criados
+19:46:33 Warehouse1 criada (id = 1519)
+->19:46:33 Mutexes criados
+19:46:33 Warehouse0 criada (id = 1518)
+19:46:39 Fim do programa
+19:46:39 Fim do processo armazem 1519
+->19:46:33 Mutexes criados
+
+
+
+19:46:42 Inicio do programa [1523]
+->19:46:42 Mutexes criados
+->19:46:42 Mutexes criados
+->19:46:42 Mutexes criados
+19:46:42 Warehouse1 criada (id = 1526)
+19:47:9 Fim do programa
+19:46:42 Warehouse0 criada (id = 1525)
+19:47:9 Fim do processo armazem 1526
+->19:46:42 Mutexes criados
+
+
+
+19:47:29 Inicio do programa [1551]
+->19:47:29 Mutexes criados
+->19:47:29 Mutexes criados
+->19:47:29 Mutexes criados
+19:47:29 Warehouse0 criada (id = 1553)
+19:47:29 Warehouse1 criada (id = 1554)
+19:47:49 Fim do programa
+19:47:49 Fim do processo armazem 1554
+->19:47:29 Mutexes criados
+
+
+
+19:54:40 Inicio do programa [1636]
+->19:54:40 Mutexes criados
+->19:54:40 Mutexes criados
+->19:54:40 Mutexes criados
+19:54:40 Warehouse0 criada (id = 1638)
+->19:54:40 Mutexes criados
+19:54:40 Warehouse1 criada (id = 1639)
+19:56:5 Fim do programa
+19:56:5 Fim do processo armazem 1639
+
+
+
+19:59:35 Inicio do programa [1702]
+->19:59:35 Mutexes criados
+->19:59:35 Mutexes criados
+->19:59:35 Mutexes criados
+20:0:41 Fim do programa
+19:59:35 Warehouse0 criada (id = 1704)
+19:59:35 Warehouse1 criada (id = 1705)
+->19:59:35 Mutexes criados
+20:0:41 Fim do processo armazem 1705
+
+
+
+20:2:29 Inicio do programa [1754]
+->20:2:29 Mutexes criados
+->20:2:29 Mutexes criados
+->20:2:29 Mutexes criados
+20:2:29 Warehouse1 criada (id = 1757)
+20:2:39 Fim do programa
+20:2:39 Fim do processo armazem 1757
+->20:2:29 Mutexes criados
+
+
+
+20:2:49 Inicio do programa [1775]
+->20:2:49 Mutexes criados
+->20:2:49 Mutexes criados
+->20:2:49 Mutexes criados
+20:2:49 Warehouse0 criada (id = 1777)
+20:3:35 Fim do programa
+20:2:49 Warehouse1 criada (id = 1778)
+->20:2:49 Mutexes criados
+20:3:35 Fim do processo armazem 1778
+
+
+
+20:6:10 Inicio do programa [1816]
+->20:6:10 Mutexes criados
+->20:6:10 Mutexes criados
+->20:6:10 Mutexes criados
+20:7:27 Fim do programa
+20:6:10 Warehouse0 criada (id = 1818)
+20:6:10 Warehouse1 criada (id = 1819)
+->20:6:10 Mutexes criados
+20:7:27 Fim do processo armazem 1819
+
+
+
+20:7:30 Inicio do programa [1837]
+->20:7:30 Mutexes criados
+->20:7:30 Mutexes criados
+->20:7:30 Mutexes criados
+20:11:26 Fim do programa
+20:7:30 Warehouse0 criada (id = 1839)
+20:7:30 Warehouse1 criada (id = 1840)
+->20:7:30 Mutexes criados
+20:11:26 Fim do processo armazem 1840
+
+
+
+20:12:34 Inicio do programa [1908]
+->20:12:34 Mutexes criados
+->20:12:34 Mutexes criados
+->20:12:34 Mutexes criados
+20:14:15 Fim do programa
+->20:12:34 Mutexes criados
+20:12:34 Warehouse0 criada (id = 1910)
+20:12:34 Warehouse1 criada (id = 1911)
+20:14:15 Fim do processo armazem 1911
+
+
+
+20:14:27 Inicio do programa [1929]
+->20:14:27 Mutexes criados
+->20:14:27 Mutexes criados
+->20:14:27 Mutexes criados
+20:15:52 Fim do programa
+20:14:27 Warehouse0 criada (id = 1931)
+20:14:27 Warehouse1 criada (id = 1932)
+20:15:52 Fim do processo armazem 1932
+->20:14:27 Mutexes criados
+
+
+
+20:19:36 Inicio do programa [2098]
+->20:19:36 Mutexes criados
+->20:19:36 Mutexes criados
+->20:19:36 Mutexes criados
+20:19:36 Warehouse1 criada (id = 2101)
+20:19:36 Warehouse0 criada (id = 2100)
+20:21:25 Fim do programa
+20:21:25 Fim do processo armazem 2101
+->20:19:36 Mutexes criados
+
+
+
+20:54:42 Inicio do programa [2618]
+->20:54:42 Mutexes criados
+->20:54:42 Mutexes criados
+->20:54:42 Mutexes criados
+->20:54:42 Mutexes criados
+20:54:42 Warehouse1 criada (id = 2621)
+20:55:16 Fim do programa
+20:54:42 Warehouse0 criada (id = 2620)
+20:55:16 Fim do processo armazem 2621
+20:54:42 Encomenda Encomenda Teste-0 entregue no destino pelo drone 0
+
+
+
+20:56:40 Inicio do programa [2695]
+->20:56:40 Mutexes criados
+->20:56:40 Mutexes criados
+->20:56:40 Mutexes criados
+->20:56:40 Mutexes criados
+20:58:11 Fim do programa
+20:56:40 Warehouse0 criada (id = 2697)
+20:56:40 Warehouse1 criada (id = 2698)
+20:56:40 Encomenda Encomenda Teste-0 entregue no destino pelo drone 0
+20:58:11 Fim do processo armazem 2698
+
+
+
+20:58:13 Inicio do programa [2730]
+->20:58:13 Mutexes criados
+->20:58:13 Mutexes criados
+->20:58:13 Mutexes criados
+->20:58:13 Mutexes criados
+20:58:44 Fim do programa
+20:58:13 Warehouse0 criada (id = 2732)
+20:58:13 Warehouse1 criada (id = 2733)
+20:58:13 Encomenda Encomenda Teste-0 entregue no destino pelo drone 0
+20:58:44 Fim do processo armazem 2733
+
+
+
+21:3:57 Inicio do programa [2825]
+->21:3:57 Mutexes criados
+->21:3:57 Mutexes criados
+->21:3:57 Mutexes criados
+->21:3:57 Mutexes criados
+21:3:57 Warehouse1 criada (id = 2828)
+21:3:57 Warehouse0 criada (id = 2827)
+21:3:57 Encomenda Encomenda Teste-0 entregue no destino pelo drone 0
+21:4:21 Fim do programa
+21:4:21 Fim do processo armazem 2828
+
+
+
+21:5:16 Inicio do programa [2870]
+->21:5:16 Mutexes criados
+->21:5:16 Mutexes criados
+->21:5:16 Mutexes criados
+->21:5:16 Mutexes criados
+21:5:16 Warehouse0 criada (id = 2872)
+21:6:52 Fim do programa
+21:5:16 Warehouse1 criada (id = 2873)
+21:5:16 Encomenda Encomenda Teste-0 entregue no destino pelo drone 0
+21:6:52 Fim do processo armazem 2873

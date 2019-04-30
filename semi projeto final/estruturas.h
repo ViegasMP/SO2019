@@ -44,8 +44,8 @@ typedef struct warehouse {
     int idArmazem;
     int coordenadas[2];
     Prod produtos[3];
-    //struct warehouse *next;
     pid_t pid;
+    int comentario;
 }Warehouse;
 
 typedef struct encomenda { // Struct usado para guardar as informacoes de uma encomenda
@@ -108,7 +108,6 @@ typedef struct message{
     int prod_type;
     char prod_type_name[50];
     int qtd;
-    int comentario;
     int idDrone;
 }msg;
 
