@@ -44,8 +44,9 @@ typedef struct warehouse {
     int idArmazem;
     int coordenadas[2];
     Prod produtos[3];
-    //struct warehouse *next;
     pid_t pid;
+    int comentario;
+    Prod reservados[3];
 }Warehouse;
 
 typedef struct encomenda { // Struct usado para guardar as informacoes de uma encomenda
@@ -55,7 +56,7 @@ typedef struct encomenda { // Struct usado para guardar as informacoes de uma en
 	char *tipo_produto;
 	int qtd;
     double coordenadas[2];
-	double coordernadasArmazem[2];
+	double coordenadasArmazem[2];
 	int idArmazem ;
     int hora, min, seg; //
     int validade;//verifica se ha a quantidade de produtos necessarios no armazem
@@ -90,3 +91,30 @@ typedef struct dados{ //Struct usado para guardar as informaçoes gerais do arma
     int max_x, max_y, n_drones, f_abast, qtd, unidadeT, numWh, bInit, bMax;
     char *tipos_produtos[MAX_BUFFER];
 }Dados;
+
+// Mutexes
+typedef struct {    //Struct dos mutexes
+    pthread_mutex_t write_file;
+    pthread_mutex_t ctrlc;
+    pthread_mutex_t write_stats;
+    pthread_mutex_t write_armazens;
+    pthread_mutex_t drones;
+} mutex_struct;
+
+
+//Struct das mensagens com atualizacao do estoque
+typedef struct message{
+    long mtype;
+    /*
+      >100
+      id do armazem + 100
+      <100
+      id do drone
+    */
+    int idArmazem;
+    int prod_type;
+    char prod_type_name[50];
+    int qtd;
+    int idDrone;
+}msg;
+
