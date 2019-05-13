@@ -46,6 +46,7 @@ typedef struct warehouse {
     Prod produtos[3];
     pid_t pid;
     int comentario;
+    Prod reservados[3];
 }Warehouse;
 
 typedef struct encomenda { // Struct usado para guardar as informacoes de uma encomenda
@@ -55,7 +56,7 @@ typedef struct encomenda { // Struct usado para guardar as informacoes de uma en
 	char *tipo_produto;
 	int qtd;
     double coordenadas[2];
-	double coordernadasArmazem[2];
+	double coordenadasArmazem[2];
 	int idArmazem ;
     int hora, min, seg; //
     int validade;//verifica se ha a quantidade de produtos necessarios no armazem

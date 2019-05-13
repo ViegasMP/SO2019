@@ -1,0 +1,57 @@
+
+
+
+19:12:52 Inicio do programa [9844]
+->19:12:52 Semaforos criados
+->19:12:52 Mutexes criados
+->19:12:52 Mutexes criados
+
+
+
+19:14:18 Inicio do programa [9871]
+->19:14:18 Semaforos criados
+->19:14:18 Mutexes criados
+->19:14:18 Mutexes criados
+
+
+
+19:16:23 Inicio do programa [9904]
+->19:16:23 Semaforos criados
+->19:16:23 Mutexes criados
+->19:16:23 Mutexes criados
+
+
+
+19:17:1 Inicio do programa [9929]
+->19:17:1 Semaforos criados
+->19:17:1 Mutexes criados
+->19:17:1 Mutexes criados
+
+
+
+19:21:2 Inicio do programa [9980]
+->19:21:2 Semaforos criados
+->19:21:2 Mutexes criados
+->19:21:2 Mutexes criados
+
+
+
+19:56:54 Inicio do programa [10117]
+->19:56:54 Semaforos criados
+->19:56:54 Mutexes criados
+->19:56:54 Mutexes criados
+->19:56:54 Mutexes criados
+19:57:5 Encomenda REQ_1-0 recebida pela Central
+19:57:5 Encomenda REQ_1-0 suspensa por falta de stock
+19:57:15 Encomenda REQ_3-1 recebida pela Central
+19:57:15 Encomenda REQ_3-1 enviada ao drone 0
+19:57:49 Encomenda REQ_3-2 recebida pela Central
+
+
+
+19:58:59 Inicio do programa [10154]
+->19:58:59 Semaforos criados
+->19:58:59 Mutexes criados
+->19:58:59 Mutexes criados
+->19:58:59 Mutexes criados
+19:59:15 Encomenda REQ_3-0 recebida pela Central
