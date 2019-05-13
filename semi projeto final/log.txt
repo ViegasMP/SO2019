@@ -552,3 +552,161 @@
 21:5:16 Warehouse1 criada (id = 2873)
 21:5:16 Encomenda Encomenda Teste-0 entregue no destino pelo drone 0
 21:6:52 Fim do processo armazem 2873
+
+
+
+11:33:24 Inicio do programa [2711]
+->11:33:24 Semaforos criados
+->11:33:24 Mutexes criados
+->11:33:24 Mutexes criados
+->11:33:24 Mutexes criados
+
+
+
+11:38:41 Inicio do programa [2771]
+->11:38:41 Semaforos criados
+->11:38:41 Mutexes criados
+->11:38:41 Mutexes criados
+->11:38:41 Mutexes criados
+
+
+
+11:39:39 Inicio do programa [2794]
+->11:39:39 Semaforos criados
+->11:39:39 Mutexes criados
+->11:39:39 Mutexes criados
+->11:39:39 Mutexes criados
+
+
+
+11:43:53 Inicio do programa [2854]
+->11:43:53 Semaforos criados
+->11:43:53 Mutexes criados
+->11:43:53 Mutexes criados
+->11:43:53 Mutexes criados
+
+
+
+12:0:25 Inicio do programa [2980]
+->12:0:25 Semaforos criados
+->12:0:25 Mutexes criados
+->12:0:25 Mutexes criados
+->12:0:25 Mutexes criados
+
+
+
+12:2:27 Inicio do programa [3012]
+->12:2:27 Semaforos criados
+->12:2:27 Mutexes criados
+->12:2:27 Mutexes criados
+
+
+
+12:5:10 Inicio do programa [3048]
+->12:5:10 Semaforos criados
+->12:5:10 Mutexes criados
+->12:5:10 Mutexes criados
+->12:5:10 Mutexes criados
+
+
+
+12:15:20 Inicio do programa [3493]
+->12:15:20 Semaforos criados
+->12:15:20 Mutexes criados
+->12:15:20 Mutexes criados
+
+
+
+12:17:22 Inicio do programa [3531]
+->12:17:22 Semaforos criados
+->12:17:22 Mutexes criados
+->12:17:22 Mutexes criados
+
+
+
+12:25:35 Inicio do programa [3600]
+->12:25:35 Semaforos criados
+->12:25:35 Mutexes criados
+->12:25:35 Mutexes criados
+
+
+
+12:43:28 Inicio do programa [3704]
+->12:43:28 Semaforos criados
+->12:43:28 Mutexes criados
+->12:43:28 Mutexes criados
+
+
+
+12:45:2 Inicio do programa [3736]
+->12:45:2 Semaforos criados
+->12:45:2 Mutexes criados
+->12:45:2 Mutexes criados
+->12:45:2 Mutexes criados
+
+
+
+3:42:29 Inicio do programa [8717]
+->3:42:29 Semaforos criados
+->3:42:29 Mutexes criados
+->3:42:29 Mutexes criados
+->3:42:29 Mutexes criados
+
+
+
+3:47:13 Inicio do programa [8768]
+->3:47:13 Semaforos criados
+->3:47:13 Mutexes criados
+->3:47:13 Mutexes criados
+->3:47:13 Mutexes criados
+
+
+
+4:24:2 Inicio do programa [8870]
+->4:24:2 Semaforos criados
+->4:24:2 Mutexes criados
+->4:24:2 Mutexes criados
+->4:24:2 Mutexes criados
+
+
+
+5:54:49 Inicio do programa [8944]
+->5:54:49 Semaforos criados
+->5:54:49 Mutexes criados
+->5:54:49 Mutexes criados
+
+
+
+5:55:9 Inicio do programa [8958]
+->5:55:9 Semaforos criados
+->5:55:9 Mutexes criados
+->5:55:9 Mutexes criados
+
+
+
+5:57:32 Inicio do programa [8983]
+->5:57:32 Semaforos criados
+->5:57:32 Mutexes criados
+->5:57:32 Mutexes criados
+
+
+
+5:58:2 Inicio do programa [8998]
+->5:58:2 Semaforos criados
+->5:58:2 Mutexes criados
+->5:58:2 Mutexes criados
+->5:58:2 Mutexes criados
+
+
+
+6:1:25 Inicio do programa [9025]
+->6:1:25 Semaforos criados
+->6:1:25 Mutexes criados
+->6:1:25 Mutexes criados
+->6:1:25 Mutexes criados
+6:1:44 Encomenda REQ_1-0 recebida pela Central
+6:1:44 Encomenda REQ_1-0 enviada ao drone 0
+6:1:44 Encomenda REQ_1-0 entregue no destino pelo drone 0
+6:2:21 Encomenda REQ_1-1 recebida pela Central
+6:2:21 Encomenda REQ_1-1 enviada ao drone 4
+6:2:24 Encomenda REQ_1-2 recebida pela Central

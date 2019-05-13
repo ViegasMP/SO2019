@@ -46,6 +46,7 @@ typedef struct warehouse {
     Prod produtos[3];
     pid_t pid;
     int comentario;
+    Prod reservados[3];
 }Warehouse;
 
 typedef struct encomenda { // Struct usado para guardar as informacoes de uma encomenda
@@ -103,7 +104,13 @@ typedef struct {    //Struct dos mutexes
 
 //Struct das mensagens com atualizacao do estoque
 typedef struct message{
-    int mtype;
+    long mtype;
+    /*
+      >100
+      id do armazem + 100
+      <100
+      id do drone
+    */
     int idArmazem;
     int prod_type;
     char prod_type_name[50];

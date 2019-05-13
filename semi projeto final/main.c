@@ -4,16 +4,12 @@
     gcc main.c -lpthread -D_REENTRANT -Wall -o prog estruturas.h  -lm
     echo "ORDER REQ_1 Prod:A, 5 to: 300, 100" >input_pipe
 
-    bateria-distancia
-    encomendas descartadas
-
     sleep unidade de tempo MILISEGUNDO
     espera ativa do drone
     sem named
     troca mutex por sem
     variavel de condicao
 
-    fila de mensagem->numeros pares
 
 */
 #include <stdio.h>
@@ -100,7 +96,6 @@ void criaArmazens(int n);
 void central();
 void init_mutex();
 void criaDrones(int numI, int qtd);
-void escolhe_armazem(Encomenda *novoNode);
 void initShm(Warehouse *arrayArmazens);
 void *baseCharger();
 void sinal_estatistica(int signum);
@@ -113,6 +108,7 @@ void destruirShm_stats();
 void cria_named_pipe();
 void cria_MQ();
 void escolheBase(double *buf,double x, double y);
+void leitura_pipe();
 
 int main() {
     dados = (Dados *) malloc(sizeof(Dados));
@@ -134,12 +130,12 @@ int main() {
 
     //Encomenda teste para Meta 1
     novoNode = malloc(sizeof(Encomenda));
-    novoNode->nomeEncomenda = "Encomenda Teste";
-    novoNode->qtd = 5;
-    novoNode->tipo_produto = "Prod_A";
-    novoNode->coordenadas[0] = (double) 300;
-    novoNode->coordenadas[1] = (double) 100;
-    novoNode->nSque = id_encomenda;
+    //novoNode->nomeEncomenda = "Encomenda Teste";
+    //novoNode->qtd = 5;
+    //novoNode->tipo_produto = "Prod_A";
+    //novoNode->coordenadas[0] = (double) 300;
+    //novoNode->coordenadas[1] = (double) 100;
+    //novoNode->nSque = id_encomenda;
 
     processo_gestor = getpid();
     sprintf(mensagem, "\n\n\n%d:%d:%d Inicio do programa [%d]\n",t->tm_hour,t->tm_min,t->tm_sec,getpid());
@@ -248,6 +244,9 @@ int main() {
     //ficheiro lido
 
     //inicializa os mutexes
+    init_sem();
+
+    //inicializa os mutexes
     init_mutex();
 
     //cria shared mem
@@ -281,18 +280,17 @@ int main() {
 void generateStock(){
     int contador = 0;
     while(1) {
-        int k = rand()%3;
+                int k = rand()%3;
         //cria mensagem com atualizacao do stock
         msg atualizaStock;
         atualizaStock.idArmazem = contador;
         atualizaStock.prod_type= k;
         atualizaStock.qtd = dados->qtd;
+        atualizaStock.mtype = (long) 100+contador;
         strcpy(atualizaStock.prod_type_name, armazensShm[atualizaStock.idArmazem].produtos[k].produto);
-        sem_wait(sem_write_armazens);
-        armazensShm[atualizaStock.idArmazem].comentario=1;
-        sem_post(sem_write_armazens);
+
         //envia para a fila de mensagens
-        msgsnd(mq_id, &atualizaStock, sizeof(atualizaStock) - sizeof(long), 0);\
+        msgsnd(mq_id, &atualizaStock, sizeof(atualizaStock) - sizeof(long), 0);
 
         printf("Mensagem de atualizacao de stock enviada:\n");
         printf("\tArmazem%d: %d produtos %s\n", atualizaStock.idArmazem, atualizaStock.qtd, atualizaStock.prod_type_name);
@@ -452,26 +450,30 @@ void criaArmazens(int n) {
 
     while(1){
         msg mensagem;
+        msgrcv(mq_id, &mensagem, sizeof(msg)-sizeof(long), (100+n), 0);
+        printf("\nStock atualizado!\n");
+        sem_wait(sem_write_armazens);
+        armazensShm[mensagem.idArmazem].produtos[mensagem.prod_type].qt += mensagem.qtd;
+        armazensShm[mensagem.idArmazem].comentario=0;
+        printf("Armazem %d atualizado: %d produtos %s\n", armazensShm[mensagem.idArmazem].idArmazem, armazensShm[mensagem.idArmazem].produtos[mensagem.prod_type].qt, armazensShm[mensagem.idArmazem].produtos[mensagem.prod_type].produto);
+        sem_post(sem_write_armazens);
+    
         
-        if(armazensShm[n].comentario==1){
-            msgrcv(mq_id, &mensagem, sizeof(msg)-sizeof(long), n, 0);
-            printf("\nStock atualizado!\n");
-            sem_wait(sem_write_armazens);
-            armazensShm[mensagem.idArmazem].produtos[mensagem.prod_type].qt += mensagem.qtd;
-            armazensShm[mensagem.idArmazem].comentario=0;
-            sem_post(sem_write_armazens);
-            printf("Armazem %d atualizado: %d produtos %s\n", armazensShm[mensagem.idArmazem].idArmazem, armazensShm[mensagem.idArmazem].produtos[mensagem.prod_type].qt, armazensShm[mensagem.idArmazem].produtos[mensagem.prod_type].produto);
-        } else if(armazensShm[n].comentario==2){
-            /*msgrcv(mq_id, &mensagem, sizeof(msg)-sizeof(long), 1, 0);
-            printf("[%d] Armazem%d foi notificado pelo Drone%d\n", getpid(), n, mensagem.idDrone);
-            sleep(mensagem.qtd);
-            printf("[%d] Armazem notifica o Drone%d\n", getpid(), mensagem.idDrone);
-            msg msg_snd;
-            msg_snd.mtype = mensagem.mtype;
-            msg_snd.idArmazem = n;
-            strcpy(msg_snd.prod_type_name, "NONE");
-            msgsnd(mq_id, &msg_snd, sizeof(msg)-sizeof(long), 0);*/
-        }
+        msgrcv(mq_id, &mensagem, sizeof(msg)-sizeof(long), mensagem.idDrone, 0);
+        printf("[%d] Armazem%d foi notificado pelo Drone%d\n", getpid(), n, mensagem.idDrone);
+        sleep(mensagem.qtd);
+        printf("[%d] Armazem notifica o Drone%d\n", getpid(), mensagem.idDrone);
+        sem_wait(sem_write_armazens);
+        armazensShm[mensagem.idArmazem].produtos[mensagem.prod_type].qt -= armazensShm[mensagem.idArmazem].reservados[mensagem.prod_type].qt;
+        armazensShm[mensagem.idArmazem].reservados[mensagem.prod_type].qt -= mensagem.qtd;
+        sem_post(sem_write_armazens);
+        msg msg_snd;
+        msg_snd.mtype = mensagem.mtype;
+        msg_snd.idArmazem = n;
+        msg_snd.qtd = mensagem.qtd;
+        msg_snd.prod_type = mensagem.prod_type;
+        msg_snd.idDrone=mensagem.idDrone;
+        msgsnd(mq_id, &msg_snd, sizeof(msg)-sizeof(long), 0);
         
         
     }
@@ -496,90 +498,99 @@ void *controla_drone (void *id) {
             printf("[%d] Nao tenho nenhuma encomenda :(\n", idDrone);
             sleep(5);
         } else {
-            printf("[%d]Recebi uma encomenda %s\n", arrayDrones[idDrone].id, arrayDrones[idDrone].encomenda_drone->nomeEncomenda);
-            printf("DX: %0.2f   DY: %0.2f    AX:  %0.2f      AY:   %0.2f \n", arrayDrones[idDrone].posI[0], arrayDrones[idDrone].posI[1],
-                   arrayDrones[idDrone].encomenda_drone->coordernadasArmazem[0], arrayDrones[idDrone].encomenda_drone->coordernadasArmazem[1]);
-            
-            //deslocamento para carregamento
-            while (move_towards(&arrayDrones[idDrone].posI[0], &arrayDrones[idDrone].posI[1],
-                                arrayDrones[idDrone].encomenda_drone->coordernadasArmazem[0],
-                                arrayDrones[idDrone].encomenda_drone->coordernadasArmazem[1]) >= 0) {
-                //printf("DRONE %d a deslocar se para Armazem (X: %0.2f   Y: %0.2f)\n ", arrayDrones[idDrone].id,  arrayDrones[idDrone].posI[0],  arrayDrones[idDrone].posI[1]);
-                arrayDrones[idDrone].bateria-=1;  
+            if(arrayDrones[idDrone].estado == 2){
+                printf("[%d]Recebi uma encomenda %s\n", arrayDrones[idDrone].id, arrayDrones[idDrone].encomenda_drone->nomeEncomenda);
+                printf("DX: %0.2f   DY: %0.2f    AX:  %0.2f      AY:   %0.2f \n", arrayDrones[idDrone].posI[0], arrayDrones[idDrone].posI[1],
+                    arrayDrones[idDrone].encomenda_drone->coordernadasArmazem[0], arrayDrones[idDrone].encomenda_drone->coordernadasArmazem[1]);
+                
+                //deslocamento para carregamento
+                while (move_towards(&arrayDrones[idDrone].posI[0], &arrayDrones[idDrone].posI[1],
+                                    arrayDrones[idDrone].encomenda_drone->coordernadasArmazem[0],
+                                    arrayDrones[idDrone].encomenda_drone->coordernadasArmazem[1]) >= 0) {
+                    //printf("DRONE %d a deslocar se para Armazem (X: %0.2f   Y: %0.2f)\n ", arrayDrones[idDrone].id,  arrayDrones[idDrone].posI[0],  arrayDrones[idDrone].posI[1]);
+                    arrayDrones[idDrone].bateria-=1;  
+                }
+                sleep(dados->unidadeT/500);
+                printf("Chegou no Armazem\n");
+                arrayDrones[idDrone].estado = 3;
             }
-            sleep(dados->unidadeT/500);
-            printf("Chegou no Armazem\n");
-            arrayDrones[idDrone].estado = 3;
 
             //carregamento
-            /*
-            printf("[%d] Notifying Warehouse...\n", arrayDrones[idDrone].id);
-            msg msg_wh;
-            msg_wh.idArmazem = arrayDrones[idDrone].encomenda_drone->idArmazem;
-            strcpy(msg_wh.prod_type_name, arrayDrones[idDrone].encomenda_drone->tipo_produto);
-            msg_wh.qtd = arrayDrones[idDrone].encomenda_drone->qtd;
-            msg_wh.idDrone = arrayDrones[idDrone].id;
-            sem_wait(sem_write_armazens);
-            armazensShm[msg_wh.idArmazem].comentario=2;
-            sem_post(sem_write_armazens);
-            msgsnd(mq_id, &msg_wh, sizeof(msg_wh)-sizeof(long), 0);
+            if(arrayDrones[idDrone].estado == 3){
+                printf("[%d] Notifica o armazem...\n", arrayDrones[idDrone].id);
+                msg msg_wh;
+                
+                msg_wh.idArmazem = arrayDrones[idDrone].encomenda_drone->idArmazem;
+                strcpy(msg_wh.prod_type_name, arrayDrones[idDrone].encomenda_drone->tipo_produto);
+                msg_wh.qtd = arrayDrones[idDrone].encomenda_drone->qtd;
+                msg_wh.idDrone = arrayDrones[idDrone].id;
+                msg_wh.mtype = (long) arrayDrones[idDrone].encomenda_drone->idArmazem + 100;
+                msgsnd(mq_id, &msg_wh, sizeof(msg_wh)-sizeof(long), 0);
+                
+                msg msg_rcv;
+                while(1){
+                    if(msgrcv(mq_id, &msg_rcv, sizeof(msg)-sizeof(long), arrayDrones[idDrone].id, 0)){
+                        printf("[%d] Carregamento concluido\n", idDrone);
+                        sem_wait(sem_write_stats);
+                        estatisticas->prod_carregados += arrayDrones[idDrone].encomenda_drone->qtd;
+                        sem_post(sem_write_stats);
+                        arrayDrones[idDrone].estado = 4;
+                        break;
+                    }
+                }
+            }
             
-            msg msg_rcv;
-            msgrcv(mq_id, &msg_rcv, sizeof(msg)-sizeof(long), idDrone, 0);
-            printf("[%d] Carregamento concluido\n", idDrone);
-            sem_wait(sem_write_stats);
-            estatisticas->prod_carregados += arrayDrones[idDrone].encomenda_drone->qtd;
-            sem_post(sem_write_stats);
-            */
-            arrayDrones[idDrone].estado = 4;
-
             //deslocação para entrega
-            printf("[%d]Drone a deslocar-se para entrega\n", arrayDrones[idDrone].id);
-            while (move_towards(&arrayDrones[idDrone].posI[0], &arrayDrones[idDrone].posI[1],
-                                arrayDrones[idDrone].encomenda_drone->coordenadas[0],
-                                arrayDrones[idDrone].encomenda_drone->coordenadas[1]) >= 0) {
-                //printf("DRONE %d a deslocar se para o Destino (X: %0.2f   Y: %0.2f)\n ",arrayDrones[idDrone].id, arrayDrones[idDrone].posI[0], arrayDrones[idDrone].posI[1]);
-                arrayDrones[idDrone].bateria-=1;
+            if(arrayDrones[idDrone].estado == 4){
+                printf("[%d]Drone a deslocar-se para entrega\n", arrayDrones[idDrone].id);
+                while (move_towards(&arrayDrones[idDrone].posI[0], &arrayDrones[idDrone].posI[1],
+                                    arrayDrones[idDrone].encomenda_drone->coordenadas[0],
+                                    arrayDrones[idDrone].encomenda_drone->coordenadas[1]) >= 0) {
+                    //printf("DRONE %d a deslocar se para o Destino (X: %0.2f   Y: %0.2f)\n ",arrayDrones[idDrone].id, arrayDrones[idDrone].posI[0], arrayDrones[idDrone].posI[1]);
+                    arrayDrones[idDrone].bateria-=1;
+                }
+                sleep(dados->unidadeT/500);
+                arrayDrones[idDrone].estado  = 5;
+
+                //calcula tempo de duracao da entrega da encomenda
+                hora = (t->tm_hour) - (arrayDrones[idDrone].encomenda_drone->hora);
+                min = (t->tm_min) - (arrayDrones[idDrone].encomenda_drone->min);
+                seg = (t->tm_sec) - (arrayDrones[idDrone].encomenda_drone->seg);
+                tTotal = (hora*3600)+(min*60)+seg;
+
+                //atualiza estatisticas
+                sem_wait(sem_write_stats);
+                estatisticas->tempo_medio_individual += tTotal;
+                estatisticas->encomendas_entregues += 1;
+                estatisticas->prod_entregues += arrayDrones[idDrone].encomenda_drone->qtd;
+                sem_post(sem_write_stats);
+                
+                //escreve no log
+                sprintf(mensagem, "%d:%d:%d Encomenda %s-%d entregue no destino pelo drone %d\n",  t->tm_hour, t->tm_min, t->tm_sec, arrayDrones[idDrone].encomenda_drone->nomeEncomenda, arrayDrones[idDrone].encomenda_drone->nSque, arrayDrones[idDrone].id);
+                printf("%s", mensagem);
+                sem_wait(sem_write_file);
+                write_log(mensagem);
+                sem_post(sem_write_file);
+                mensagem[0] = '\0';
+
+                escolheBase(arrayDrones[idDrone].posF,arrayDrones[idDrone].posI[0],arrayDrones[idDrone].posI[1]);
+
             }
-            sleep(dados->unidadeT/500);
-            arrayDrones[idDrone].estado  = 5;
 
-            //calcula tempo de duracao da entrega da encomenda
-            hora = (t->tm_hour) - (arrayDrones[idDrone].encomenda_drone->hora);
-            min = (t->tm_min) - (arrayDrones[idDrone].encomenda_drone->min);
-            seg = (t->tm_sec) - (arrayDrones[idDrone].encomenda_drone->seg);
-            tTotal = (hora*3600)+(min*60)+seg;
+            if(arrayDrones[idDrone].estado==5){
+                printf("[%d]Regressar a base [%.2f, %.2f]\n", arrayDrones[idDrone].id, arrayDrones[idDrone].posF[0], arrayDrones[idDrone].posF[1]);
+                while (move_towards(&arrayDrones[idDrone].posI[0], &arrayDrones[idDrone].posI[1],
+                                    arrayDrones[idDrone].posF[0],arrayDrones[idDrone].posF[1]) >= 0 
+                                    && arrayDrones[idDrone].estado==5) {
+                    //printf("[%d]Drone a deslocar se para Base (X: %0.2f   Y: %0.2f)\n",arrayDrones[idDrone].id, arrayDrones[idDrone].posI[0], arrayDrones[idDrone].posI[1]);
+                    arrayDrones[idDrone].bateria-=1;
+                }
+                sleep(dados->unidadeT/500);
 
-            //atualiza estatisticas
-            sem_wait(sem_write_stats);
-            estatisticas->tempo_medio_individual += tTotal;
-            estatisticas->encomendas_entregues += 1;
-            estatisticas->prod_entregues += arrayDrones[idDrone].encomenda_drone->qtd;
-            sem_post(sem_write_stats);
-            
-            //escreve no log
-            sprintf(mensagem, "%d:%d:%d Encomenda %s-%d entregue no destino pelo drone %d\n",  t->tm_hour, t->tm_min, t->tm_sec, arrayDrones[idDrone].encomenda_drone->nomeEncomenda, arrayDrones[idDrone].encomenda_drone->nSque, arrayDrones[idDrone].id);
-            printf("%s", mensagem);
-            sem_wait(sem_write_file);
-            write_log(mensagem);
-            sem_post(sem_write_file);
-            mensagem[0] = '\0';
-
-            escolheBase(arrayDrones[idDrone].posF,arrayDrones[idDrone].posI[0],arrayDrones[idDrone].posI[1]);
-
-            printf("[%d]Regressar a base [%.2f, %.2f]\n", arrayDrones[idDrone].id, arrayDrones[idDrone].posF[0], arrayDrones[idDrone].posF[1]);
-            while (move_towards(&arrayDrones[idDrone].posI[0], &arrayDrones[idDrone].posI[1],
-                                arrayDrones[idDrone].posF[0],arrayDrones[idDrone].posF[1]) >= 0 && arrayDrones[idDrone].estado==5) {
-                //printf("[%d]Drone a deslocar se para Base (X: %0.2f   Y: %0.2f)\n",arrayDrones[idDrone].id, arrayDrones[idDrone].posI[0], arrayDrones[idDrone].posI[1]);
-                arrayDrones[idDrone].bateria-=1;
+                printf("Chegou a base\n");
+                arrayDrones[idDrone].estado = 1;
             }
-            sleep(dados->unidadeT/500);
-
-            printf("Chegou a base\n");
-            arrayDrones[idDrone].estado = 1;
             
-            arrayDrones[idDrone].encomenda_drone = NULL; //fase teste
-
         }
         
         sleep(dados->unidadeT/50);
@@ -622,7 +633,6 @@ void escolheBase(double buf[2],double x, double y){
 //escolhe o drone para uma encomenda
 void escolheDrone(){
     printf("\nSELECIONAR O DRONE PARA A ENCOMENDA FEITA\n");
-
 
     printf("Encomenda: %s\n", novoNode->nomeEncomenda);
     printf("prod: %s\n", novoNode->tipo_produto);
@@ -670,25 +680,25 @@ void escolheDrone(){
         estatisticas->encomendas_atribuidas += 1;
         pthread_mutex_unlock(&mutexes->write_stats);
 
-        //apaga encomenda
-        novoNode=NULL;
-
     }
 }
 
 //escolhe o armazem para uma encomenda
 void escolheArmazem(){
     int flag = 1;
+    printf("\nSELECIONAR O ARMAZEM PARA A ENCOMENDA FEITA\n");
     for(int k = 0;k < dados->numWh;k++) {
         for (int i = 0; i < 3; i++) {
             if (strcmp(armazensShm[k].produtos[i].produto,novoNode->tipo_produto) == 0) {
-                if(armazensShm[k].produtos[i].qt >= novoNode->qtd){
+                if(armazensShm[k].produtos[i].qt - armazensShm[k].reservados[i].qt >= novoNode->qtd){
                     novoNode->coordernadasArmazem[0] = armazensShm[k].coordenadas[0];
                     novoNode->coordernadasArmazem[1] = armazensShm[k].coordenadas[1];
                     novoNode->idArmazem = k;
-                    pthread_mutex_lock(&mutexes->write_armazens);
-                    armazensShm[k].produtos[i].qt =  armazensShm[k].produtos[i].qt - novoNode->qtd;
-                    pthread_mutex_unlock(&mutexes->write_armazens);
+                    printf("armazem escolhido = %d\n", novoNode->idArmazem);
+                    novoNode->validade = 1;
+                    sem_wait(sem_write_armazens);
+                    armazensShm[k].reservados[i].qt = novoNode->qtd;
+                    sem_post(sem_write_armazens);
                     flag = 0;
                     break;
                 }
@@ -767,6 +777,185 @@ void *baseCharger(){
     }
 }
 
+void leitura_pipe(){
+    while(1){
+        int fd_pipe;
+        int n_char;
+        char buf[128], linha[128];
+
+        if((fd_pipe = open(PIPE_NAME, O_RDONLY)) < 0){
+            perror("Erro ao abrir o pipe");
+            exit(0);
+        }
+
+        Encomenda *aux, *atual, *anterior;
+        aux = headListaE;
+        atual = headListaE->next;
+        anterior = headListaE;
+
+        n_char = read(fd_pipe, buf, 128);
+        buf[n_char-1] = '\0';
+        printf("%s", buf);
+        fflush(stdout);
+
+        strcpy(linha, buf);
+        char *token = strtok(buf, " ");
+
+        if(strcmp(token, "ORDER")==0){
+            //Encomenda *novoNode = malloc(sizeof(Encomenda));
+            time_t tempo = time(NULL);
+            struct tm *t = localtime(&tempo);
+            char *str = "Prod_";
+            char nome_ordem[20];
+            char nome_produto;
+            int quantidade, posX, posY;
+
+            sscanf(linha, "ORDER %s Prod: %c, %d to: %d, %d", nome_ordem, &nome_produto, &quantidade, &posX, &posY);
+        
+            size_t len = strlen(str);
+            char *produto = malloc(len + 1 + 1);
+            strcpy(produto, str);
+            produto[len] = nome_produto;
+            produto[len + 1] = '\0';
+            int posProd=0;
+            while (strcmp(dados->tipos_produtos[posProd], produto) != 0||posProd>9) {
+                posProd++;
+            }
+            printf("\nOpcao: ORDER\n");
+
+            if(strcmp(dados->tipos_produtos[posProd], produto) == 0) {
+                //tipo de produto valido
+                if(posX <= dados->max_x && posX >= 0 && posY <= dados->max_y && posY >= 0) {
+                    //coordenadas tambem validas
+                    //guarda as informacoes do pipe no no
+                    strcpy(novoNode->nomeEncomenda,nome_ordem);
+                    novoNode->qtd = quantidade;
+                    novoNode->tipo_produto = produto;
+                    novoNode->coordenadas[0] = (double) posX;
+                    novoNode->coordenadas[1] = (double) posY;
+                    novoNode->nSque = id_encomenda;
+                    novoNode->validade = -1;
+                    novoNode->id_drone = -1;
+                    id_encomenda++;
+
+                    //guarda o horario que a encomenda foi criada
+                    novoNode->hora = t->tm_hour;
+                    novoNode->min = t->tm_min;
+                    novoNode->seg = t->tm_sec;
+
+                    sprintf(mensagem, "%d:%d:%d Encomenda %s-%d recebida pela Central\n", novoNode->hora, novoNode->min, novoNode->seg, novoNode->nomeEncomenda, novoNode->nSque);
+                    printf("%s", mensagem);
+
+                    sem_wait(sem_write_file);
+                    write_log(mensagem);
+                    sem_post(sem_write_file);
+
+                    escolheArmazem();
+
+                    if (novoNode->validade == 1) { //ha stock no armazem
+                        escolheDrone();
+                        if (novoNode->id_drone != -1){//ha drones disponiveis
+                            sprintf(mensagem, "%d:%d:%d Encomenda %s-%d enviada ao drone %d\n", t->tm_hour, t->tm_min, t->tm_sec, novoNode->nomeEncomenda, novoNode->nSque, novoNode->id_drone);
+                            printf("%s", mensagem);
+                            sem_wait(sem_write_file);
+                            write_log(mensagem);
+                            sem_post(sem_write_file);
+
+                            //pthread_cond_broadcast(&cond_nao_escolhido);
+                        } else { //todos os drones ocupados
+                            sprintf(mensagem, "%d:%d:%d Encomenda %s-%d suspensa por falta de drones\n", t->tm_hour, t->tm_min, t->tm_sec, novoNode->nomeEncomenda, novoNode->nSque);
+                            //apaga encomenda
+                            novoNode=NULL;
+                            printf("%s", mensagem);
+                            sem_wait(sem_write_file);
+                            write_log(mensagem);
+                            sem_post(sem_write_file);
+
+                            sem_wait(sem_write_stats);
+                            estatisticas->encomendas_descartadas += 1;
+                            sem_post(sem_write_stats);
+
+                            sem_wait(sem_write_armazens);
+                            armazensShm[k].reservados[i].qt -= novoNode->qtd;
+                            sem_post(sem_write_armazens);
+                        }
+                    } else { //nao ha stock em nenhum armazem
+                        sprintf(mensagem, "%d:%d:%d Encomenda %s-%d suspensa por falta de stock\n", t->tm_hour, t->tm_min, t->tm_sec, novoNode->nomeEncomenda, novoNode->nSque);
+                        //apaga encomenda
+                        novoNode=NULL;
+                        printf("%s", mensagem);
+                        sem_wait(sem_write_file);
+                        write_log(mensagem);
+                        sem_post(sem_write_file);
+
+                        sem_wait(sem_write_stats);
+                        estatisticas->encomendas_descartadas += 1;
+                        sem_post(sem_write_stats);
+
+                    }
+                } else { //coordenada invalida
+                    sprintf(mensagem, "%d:%d:%d Coordenada invalida: %s \n", t->tm_hour, t->tm_min, t->tm_sec, linha);
+                    sem_wait(sem_write_file);
+                    write_log(mensagem);
+                    sem_post(sem_write_file);
+                }
+            }else{ //produto invalido
+                sprintf(mensagem, "%d:%d:%d Produto invalido: %s \n", t->tm_hour, t->tm_min, t->tm_sec, linha);
+                sem_wait(sem_write_file);
+                write_log(mensagem);
+                sem_post(sem_write_file);
+            }
+
+        } else if(strcmp(token, "DRONE")==0){
+            int num;
+            scanf(linha, "DRONE SET %d", &num);
+
+            if(num < dados->n_drones) {
+                for(int k= num ; k < dados->n_drones; k++){
+
+                    if (arrayDrones[k].estado ==1 || arrayDrones[k].estado==5){
+
+                        pthread_cancel(my_thread[k]);
+                        pthread_join(my_thread[k], NULL);
+
+                        arrayDrones[k].estado = 0;
+                        arrayDrones[k].id = -1;
+                        arrayDrones[k].posI[0] = 0;
+                        arrayDrones[k].posI[1] = 0;
+                        arrayDrones[k].posF[0] = 0;
+                        arrayDrones[k].posF[1] = 0;
+
+                    } else {
+
+                        pthread_mutex_lock(&mutexes->drones);
+                        pthread_cancel(my_thread[k]);
+                        pthread_join(my_thread[k], NULL);
+                        pthread_mutex_unlock(&mutexes->drones);
+
+                        arrayDrones[k].estado = 0;
+                        arrayDrones[k].id = -1;
+                        arrayDrones[k].posI[0] = 0;
+                        arrayDrones[k].posI[1] = 0;
+                        arrayDrones[k].posF[0] = 0;
+                        arrayDrones[k].posF[1] = 0;
+                    }
+
+                    printf("\nForam destruidas %d threads\n", dados->n_drones - num);
+                    dados->n_drones = num;
+                }
+
+            } else if (num > dados->n_drones){
+                    criaDrones(dados->n_drones,num);
+                    dados->n_drones = num;
+            } else {
+                printf("\nJa estao derteminadas %d threads drones\n", num);
+            }
+        }else{
+            printf("Comando invalido\nTente:\n\tORDER <order name> prod: <product name>, <quantity> to: <x>, <y>\n\tDRONE SET <num>\n");
+        }
+    }
+}
+
 //Cria named pipe
 void cria_named_pipe(){
 
@@ -796,8 +985,11 @@ void central(){
     //cria o pipe
     cria_named_pipe();
 
-    escolheArmazem();
-    escolheDrone();
+    leitura_pipe();
+
+    //meta1
+    //escolheArmazem();
+    //escolheDrone();
 
     for (int i = 0; i < dados->n_drones; i++) {
         if(pthread_join(my_thread[i], NULL)==0){
