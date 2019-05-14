@@ -105,16 +105,12 @@ typedef struct {    //Struct dos mutexes
 //Struct das mensagens com atualizacao do estoque
 typedef struct message{
     long mtype;
-    /*
-      >100
-      id do armazem + 100
-      <100
-      id do drone
-    */
     int idArmazem;
     int prod_type;
     char prod_type_name[50];
     int qtd;
     int idDrone;
+    int tipo_mensagem;
+    //1->encomenda 2->stock
 }msg;
 

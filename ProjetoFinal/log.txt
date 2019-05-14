@@ -55,3 +55,474 @@
 ->19:58:59 Mutexes criados
 ->19:58:59 Mutexes criados
 19:59:15 Encomenda REQ_3-0 recebida pela Central
+
+
+
+11:16:22 Inicio do programa [2052]
+->11:16:22 Semaforos criados
+->11:16:22 Mutexes criados
+->11:16:22 Mutexes criados
+->11:16:22 Mutexes criados
+11:17:28 Encomenda REQ_1-0 recebida pela Central
+11:17:28 Encomenda REQ_1-0 enviada ao drone 0
+11:18:20 Encomenda REQ_2-1 recebida pela Central
+
+
+
+11:26:23 Inicio do programa [2251]
+->11:26:23 Semaforos criados
+->11:26:23 Mutexes criados
+->11:26:23 Mutexes criados
+->11:26:23 Mutexes criados
+11:26:33 Encomenda REQ_1-0 recebida pela Central
+
+
+
+11:31:7 Inicio do programa [2308]
+->11:31:7 Semaforos criados
+->11:31:7 Mutexes criados
+->11:31:7 Mutexes criados
+->11:31:7 Mutexes criados
+11:31:16 Encomenda REQ_1-0 recebida pela Central
+
+
+
+11:32:40 Inicio do programa [2346]
+->11:32:40 Semaforos criados
+->11:32:40 Mutexes criados
+->11:32:40 Mutexes criados
+->11:32:40 Mutexes criados
+11:32:46 Encomenda REQ_1-0 recebida pela Central
+
+
+
+11:34:12 Inicio do programa [2415]
+->11:34:12 Semaforos criados
+->11:34:12 Mutexes criados
+->11:34:12 Mutexes criados
+
+
+
+11:35:17 Inicio do programa [2451]
+->11:35:17 Semaforos criados
+->11:35:17 Mutexes criados
+->11:35:17 Mutexes criados
+->11:35:17 Mutexes criados
+11:35:23 Encomenda REQ_1-0 recebida pela Central
+
+
+
+11:38:35 Inicio do programa [2479]
+->11:38:35 Semaforos criados
+->11:38:35 Mutexes criados
+->11:38:35 Mutexes criados
+->11:38:35 Mutexes criados
+11:38:52 Encomenda REQ_1-0 recebida pela Central
+
+
+
+11:40:14 Inicio do programa [2504]
+->11:40:14 Semaforos criados
+->11:40:14 Mutexes criados
+->11:40:14 Mutexes criados
+->11:40:14 Mutexes criados
+11:40:20 Encomenda REQ_1-0 recebida pela Central
+
+
+
+11:41:31 Inicio do programa [2529]
+->11:41:31 Semaforos criados
+->11:41:31 Mutexes criados
+->11:41:31 Mutexes criados
+->11:41:31 Mutexes criados
+11:41:37 Encomenda REQ_1-0 recebida pela Central
+11:41:37 Encomenda REQ_1-0 enviada ao drone 0
+
+
+
+11:51:12 Inicio do programa [2577]
+->11:51:12 Semaforos criados
+->11:51:12 Mutexes criados
+->11:51:12 Mutexes criados
+->11:51:12 Mutexes criados
+11:51:25 Encomenda REQ_1-0 recebida pela Central
+
+
+
+11:52:53 Inicio do programa [2603]
+->11:52:53 Semaforos criados
+->11:52:53 Mutexes criados
+->11:52:53 Mutexes criados
+->11:52:53 Mutexes criados
+11:53:2 Encomenda REQ_1-0 recebida pela Central
+
+
+
+11:59:13 Inicio do programa [2641]
+->11:59:13 Semaforos criados
+->11:59:13 Mutexes criados
+->11:59:13 Mutexes criados
+->11:59:13 Mutexes criados
+11:59:33 Encomenda REQ_1-0 recebida pela Central
+11:59:33 Encomenda REQ_1-0 enviada ao drone 0
+
+
+
+12:0:43 Inicio do programa [2665]
+->12:0:43 Semaforos criados
+->12:0:43 Mutexes criados
+->12:0:43 Mutexes criados
+->12:0:43 Mutexes criados
+12:0:49 Encomenda REQ_1-0 recebida pela Central
+12:0:49 Encomenda REQ_1-0 enviada ao drone 0
+
+
+
+12:2:23 Inicio do programa [2692]
+->12:2:23 Semaforos criados
+->12:2:23 Mutexes criados
+->12:2:23 Mutexes criados
+->12:2:23 Mutexes criados
+12:2:28 Encomenda REQ_1-0 recebida pela Central
+12:2:28 Encomenda REQ_1-0 enviada ao drone 0
+
+
+
+12:3:28 Inicio do programa [2716]
+->12:3:28 Semaforos criados
+->12:3:28 Mutexes criados
+->12:3:28 Mutexes criados
+
+
+
+12:5:55 Inicio do programa [2743]
+->12:5:55 Semaforos criados
+->12:5:55 Mutexes criados
+->12:5:55 Mutexes criados
+
+
+
+12:10:17 Inicio do programa [2772]
+->12:10:17 Semaforos criados
+->12:10:17 Mutexes criados
+->12:10:17 Mutexes criados
+
+
+
+12:12:9 Inicio do programa [2796]
+->12:12:9 Semaforos criados
+->12:12:9 Mutexes criados
+->12:12:9 Mutexes criados
+
+
+
+12:13:31 Inicio do programa [2822]
+->12:13:31 Semaforos criados
+->12:13:31 Mutexes criados
+->12:13:31 Mutexes criados
+
+
+
+12:16:38 Inicio do programa [2861]
+->12:16:38 Semaforos criados
+->12:16:38 Mutexes criados
+->12:16:38 Mutexes criados
+
+
+
+12:17:30 Inicio do programa [2889]
+->12:17:30 Semaforos criados
+->12:17:30 Mutexes criados
+->12:17:30 Mutexes criados
+->12:17:30 Mutexes criados
+12:18:43 Encomenda REQ_1-0 recebida pela Central
+12:18:43 Encomenda REQ_1-0 enviada ao drone 0
+
+
+
+12:55:6 Inicio do programa [3001]
+->12:55:6 Semaforos criados
+->12:55:6 Mutexes criados
+->12:55:6 Mutexes criados
+
+
+
+12:55:56 Inicio do programa [3024]
+->12:55:56 Semaforos criados
+->12:55:56 Mutexes criados
+->12:55:56 Mutexes criados
+
+
+
+12:58:18 Inicio do programa [3050]
+->12:58:18 Semaforos criados
+->12:58:18 Mutexes criados
+->12:58:18 Mutexes criados
+
+
+
+15:48:52 Inicio do programa [3268]
+->15:48:52 Semaforos criados
+->15:48:52 Mutexes criados
+->15:48:52 Mutexes criados
+
+
+
+15:50:13 Inicio do programa [3292]
+->15:50:13 Semaforos criados
+->15:50:13 Mutexes criados
+->15:50:13 Mutexes criados
+
+
+
+15:55:1 Inicio do programa [3336]
+->15:55:1 Semaforos criados
+->15:55:1 Mutexes criados
+->15:55:1 Mutexes criados
+
+
+
+15:55:58 Inicio do programa [3357]
+->15:55:58 Semaforos criados
+->15:55:58 Mutexes criados
+->15:55:58 Mutexes criados
+
+
+
+16:2:46 Inicio do programa [3384]
+->16:2:46 Semaforos criados
+->16:2:46 Mutexes criados
+->16:2:46 Mutexes criados
+
+
+
+22:19:37 Inicio do programa [3867]
+->22:19:37 Semaforos criados
+->22:19:37 Mutexes criados
+->22:19:37 Mutexes criados
+
+
+
+22:23:2 Inicio do programa [3896]
+->22:23:2 Semaforos criados
+->22:23:2 Mutexes criados
+->22:23:2 Mutexes criados
+
+
+
+22:26:26 Inicio do programa [3927]
+->22:26:26 Semaforos criados
+->22:26:26 Mutexes criados
+->22:26:26 Mutexes criados
+
+
+
+22:32:49 Inicio do programa [3957]
+->22:32:49 Semaforos criados
+->22:32:49 Mutexes criados
+->22:32:49 Mutexes criados
+->22:32:49 Mutexes criados
+22:32:59 Encomenda REQ_1-0 recebida pela Central
+
+
+
+22:38:55 Inicio do programa [3992]
+->22:38:55 Semaforos criados
+->22:38:55 Mutexes criados
+->22:38:55 Mutexes criados
+->22:38:55 Mutexes criados
+22:39:6 Encomenda REQ_1-0 recebida pela Central
+
+
+
+22:40:48 Inicio do programa [4017]
+->22:40:48 Semaforos criados
+->22:40:48 Mutexes criados
+->22:40:48 Mutexes criados
+->22:40:48 Mutexes criados
+22:40:56 Encomenda REQ_1-0 recebida pela Central
+
+
+
+22:42:48 Inicio do programa [4297]
+->22:42:48 Semaforos criados
+->22:42:48 Mutexes criados
+->22:42:48 Mutexes criados
+->22:42:48 Mutexes criados
+22:42:58 Encomenda REQ_1-0 recebida pela Central
+
+
+
+22:47:58 Inicio do programa [4372]
+->22:47:58 Semaforos criados
+->22:47:58 Mutexes criados
+->22:47:58 Mutexes criados
+->22:47:58 Mutexes criados
+22:48:22 Encomenda REQ_1-0 recebida pela Central
+
+
+
+22:51:9 Inicio do programa [4412]
+->22:51:9 Semaforos criados
+->22:51:9 Mutexes criados
+->22:51:9 Mutexes criados
+->22:51:9 Mutexes criados
+22:51:20 Encomenda REQ_1-0 recebida pela Central
+
+
+
+22:55:52 Inicio do programa [4461]
+->22:55:52 Semaforos criados
+->22:55:52 Mutexes criados
+->22:55:52 Mutexes criados
+->22:55:52 Mutexes criados
+22:56:15 Encomenda REQ_1-0 recebida pela Central
+
+
+
+22:57:48 Inicio do programa [4488]
+->22:57:48 Semaforos criados
+->22:57:48 Mutexes criados
+->22:57:48 Mutexes criados
+->22:57:48 Mutexes criados
+22:58:0 Encomenda REQ_1-0 recebida pela Central
+
+
+
+22:59:34 Inicio do programa [4513]
+->22:59:34 Semaforos criados
+->22:59:34 Mutexes criados
+->22:59:34 Mutexes criados
+->22:59:34 Mutexes criados
+22:59:48 Encomenda REQ_1-0 recebida pela Central
+
+
+
+23:0:32 Inicio do programa [4539]
+->23:0:32 Semaforos criados
+->23:0:32 Mutexes criados
+->23:0:32 Mutexes criados
+->23:0:32 Mutexes criados
+23:0:41 Encomenda REQ_1-0 recebida pela Central
+
+
+
+23:3:0 Inicio do programa [4566]
+->23:3:0 Semaforos criados
+->23:3:0 Mutexes criados
+->23:3:0 Mutexes criados
+->23:3:0 Mutexes criados
+23:3:34 Encomenda REQ_1-0 recebida pela Central
+
+
+
+23:17:36 Inicio do programa [4647]
+->23:17:36 Semaforos criados
+->23:17:36 Mutexes criados
+->23:17:36 Mutexes criados
+->23:17:36 Mutexes criados
+23:17:55 Encomenda REQ_1-0 recebida pela Central
+
+
+
+23:19:32 Inicio do programa [4675]
+->23:19:32 Semaforos criados
+->23:19:32 Mutexes criados
+->23:19:32 Mutexes criados
+->23:19:32 Mutexes criados
+23:19:41 Encomenda REQ_1-0 recebida pela Central
+
+
+
+23:20:35 Inicio do programa [4700]
+->23:20:35 Semaforos criados
+->23:20:35 Mutexes criados
+->23:20:35 Mutexes criados
+->23:20:35 Mutexes criados
+23:20:42 Encomenda REQ_1-0 recebida pela Central
+
+
+
+23:22:19 Inicio do programa [4752]
+->23:22:19 Semaforos criados
+->23:22:19 Mutexes criados
+->23:22:19 Mutexes criados
+->23:22:19 Mutexes criados
+23:22:30 Encomenda REQ_1-0 recebida pela Central
+
+
+
+23:23:28 Inicio do programa [4775]
+->23:23:28 Semaforos criados
+->23:23:28 Mutexes criados
+->23:23:28 Mutexes criados
+->23:23:28 Mutexes criados
+23:23:33 Encomenda REQ_1-0 recebida pela Central
+
+
+
+23:24:18 Inicio do programa [4805]
+->23:24:18 Semaforos criados
+->23:24:18 Mutexes criados
+->23:24:18 Mutexes criados
+->23:24:18 Mutexes criados
+23:24:25 Encomenda REQ_1-0 recebida pela Central
+
+
+
+23:24:56 Inicio do programa [4830]
+->23:24:56 Semaforos criados
+->23:24:56 Mutexes criados
+->23:24:56 Mutexes criados
+->23:24:56 Mutexes criados
+23:25:6 Encomenda REQ_1-0 recebida pela Central
+
+
+
+23:26:19 Inicio do programa [4854]
+->23:26:19 Semaforos criados
+->23:26:19 Mutexes criados
+->23:26:19 Mutexes criados
+->23:26:19 Mutexes criados
+23:26:26 Encomenda REQ_1-0 recebida pela Central
+23:26:26 Encomenda REQ_1-0 enviada ao drone 4
+23:26:26 Encomenda REQ_1-0 entregue no destino pelo drone 4
+23:26:40 Encomenda REQ_2-1 recebida pela Central
+23:26:40 Encomenda REQ_2-1 suspensa por falta de drones
+23:26:55 Encomenda REQ_2-2 recebida pela Central
+23:26:55 Encomenda REQ_2-2 suspensa por falta de drones
+23:28:4 Encomenda REQ_2-3 recebida pela Central
+23:28:4 Encomenda REQ_2-3 enviada ao drone 4
+23:28:4 Encomenda REQ_2-3 entregue no destino pelo drone 4
+23:28:27 Encomenda REQ_2-4 recebida pela Central
+23:28:27 Encomenda REQ_2-4 enviada ao drone 5
+23:28:27 Encomenda REQ_2-4 entregue no destino pelo drone 5
+23:28:33 Encomenda REQ_2-5 recebida pela Central
+23:28:33 Encomenda REQ_2-5 enviada ao drone 1
+23:28:33 Encomenda REQ_2-5 entregue no destino pelo drone 1
+23:28:47 Encomenda REQ_1-6 recebida pela Central
+
+
+
+23:31:41 Inicio do programa [4894]
+->23:31:41 Semaforos criados
+->23:31:41 Mutexes criados
+->23:31:41 Mutexes criados
+->23:31:41 Mutexes criados
+23:31:47 Encomenda REQ_1-0 recebida pela Central
+23:31:47 Encomenda REQ_1-0 enviada ao drone 4
+23:31:47 Encomenda REQ_1-0 entregue no destino pelo drone 4
+23:32:5 Encomenda REQ_2-1 recebida pela Central
+23:32:5 Encomenda REQ_2-1 enviada ao drone 1
+23:32:5 Encomenda REQ_2-1 entregue no destino pelo drone 1
+23:32:17 Encomenda REQ_3-2 recebida pela Central
+23:32:17 Encomenda REQ_3-2 enviada ao drone 5
+
+
+
+23:43:6 Inicio do programa [4959]
+->23:43:6 Semaforos criados
+->23:43:6 Mutexes criados
+->23:43:6 Mutexes criados
+->23:43:6 Mutexes criados
+23:43:28 Encomenda REQ_3-0 recebida pela Central
